@@ -1,6 +1,6 @@
-import Renderer from './renderer';
+import Engine from "./engine";
 
 const canvas = document.getElementById('gfx') as HTMLCanvasElement;
-canvas.width = canvas.height = 640;
-const renderer = new Renderer(canvas);
-renderer.start();
+const engine = new Engine(canvas);
+
+engine.main();

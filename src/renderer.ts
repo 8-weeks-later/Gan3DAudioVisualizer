@@ -5,8 +5,11 @@ import fragShaderCode from './shaders/triangle.frag.wgsl';
 
 // 📈 Position Vertex Buffer Data
 const positions = new Float32Array([
-    1.0, -1.0, 0.0, -1.0, -1.0, 0.0, 0.0, 1.0, 0.0
+    1.0, -1.0, 0.0,
+    -1.0, -1.0, 0.0,
+    0.0, 1.0, 0.0
 ]);
+
 // 🎨 Color Vertex Buffer Data
 const colors = new Float32Array([
     1.0,
@@ -24,6 +27,7 @@ const colors = new Float32Array([
 const indices = new Uint16Array([0, 1, 2]);
 
 export default class Renderer {
+    //#region fields
     canvas: HTMLCanvasElement;
 
     // ⚙️ API Data Structures
@@ -48,6 +52,7 @@ export default class Renderer {
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
+    //#endregion fields
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -66,7 +71,7 @@ export default class Renderer {
     async initializeAPI(): Promise<boolean> {
         try {
             // 🏭 Entry to WebGPU
-            const entry: GPU = navigator.gpu;
+            const entry: GPU = navigator.gpu; 
             if (!entry) {
                 return false;
             }
@@ -187,10 +192,8 @@ export default class Renderer {
 
         const pipelineDesc: GPURenderPipelineDescriptor = {
             layout,
-
             vertex,
             fragment,
-
             primitive,
             depthStencil
         };
