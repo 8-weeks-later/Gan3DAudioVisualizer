@@ -1,3 +1,6 @@
+import Mesh from "./objects/mesh";
+import MeshData from "./objects/meshData";
+
 export default class Renderer {
     canvas: HTMLCanvasElement;
     adapter: GPUAdapter;
@@ -8,19 +11,16 @@ export default class Renderer {
     colorTextureView: GPUTextureView;
     depthTexture: GPUTexture;
     depthTextureView: GPUTextureView;
-    positionBuffer: GPUBuffer;
-    colorBuffer: GPUBuffer;
-    indexBuffer: GPUBuffer;
-    vertModule: GPUShaderModule;
-    fragModule: GPUShaderModule;
+    mesh : Mesh;
     pipeline: GPURenderPipeline;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     constructor(canvas: any);
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
-    initializeResources(): Promise<void>;
+    initializeResources(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;
+    setMesh(meshData: MeshData): boolean;
 }
