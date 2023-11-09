@@ -10,7 +10,7 @@ export default class Engine {
         this.renderer = new Renderer(canvas);
     }
     
-    async main() : Promise<void>{
+    async appRun() : Promise<void>{
         if (!(await this.renderer.initializeAPI())) {
             return;
         }
@@ -20,6 +20,7 @@ export default class Engine {
 
         while(1){
             // TODO: remove force delay
+            // Update
             await new Promise(f => setTimeout(f, 1000)); 
             this.renderer.render();
             console.log("Updated!!")

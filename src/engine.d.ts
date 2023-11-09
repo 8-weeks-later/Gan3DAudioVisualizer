@@ -5,6 +5,6 @@ export default class Engine {
     renderer: Renderer;
 
     constructor(canvas: any);
-    main(): Promise<void>;
+    appRun(): Promise<void>;
     initCanvas(): void;
 }
