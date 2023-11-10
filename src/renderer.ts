@@ -258,7 +258,6 @@ export default class Renderer {
         mesh.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
         mesh.numOfIndex = meshData.indices.length;
 
-        console.log("gdss2");
         // TODO: 쉐이더 적용 동적으로 변경가능하도록 변경
         // 🖍️ Shaders
         const vsmDesc = {
@@ -272,8 +271,6 @@ export default class Renderer {
         mesh.fragModule = this.device.createShaderModule(fsmDesc);
 
         this.mesh = mesh;
-
-        console.log("gdss");
         
         this.initializeResources();
         return true;

@@ -1,3 +1,4 @@
+import GeometryGenerator from "./objects/geometryGenerator";
 import MeshData from "./objects/meshData";
 import Renderer from "./renderer";
 
@@ -50,9 +51,10 @@ export default class Engine {
             return;
         }
 
+        const geometryGenerator = new GeometryGenerator;
+
         this.renderer.resizeBackings();
-        const meshData = new MeshData(positions, colors, indices);
-        this.renderer.setMesh(meshData);
+        this.renderer.setMesh(geometryGenerator.makeTriangle(1.0));
 
         while(1){
             // TODO: remove force delay
