@@ -13,6 +13,7 @@ export default class Renderer {
     depthTextureView: GPUTextureView;
     mesh : Mesh;
     pipeline: GPURenderPipeline;
+    bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     constructor(canvas: any);

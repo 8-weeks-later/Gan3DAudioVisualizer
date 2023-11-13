@@ -2,6 +2,7 @@ import vertShaderCode from './shaders/triangle.vert.wgsl';
 import fragShaderCode from './shaders/triangle.frag.wgsl';
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
+import { mat4, vec4 } from 'gl-matrix';
 
 export default class Renderer {
     //#region fields
@@ -23,6 +24,7 @@ export default class Renderer {
     mesh : Mesh;
     pipeline: GPURenderPipeline;
 
+    bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     //#endregion fields
@@ -123,7 +125,21 @@ export default class Renderer {
         };
 
         // 🦄 Uniform Data
-        const pipelineLayoutDesc = { bindGroupLayouts: [] };
+        this.bindGroupLayout = this.device.createBindGroupLayout({
+            entries: [{
+              binding: 0, // camera uniforms
+              visibility: GPUShaderStage.VERTEX,
+              buffer: {},
+            }, {
+              binding: 1, // model uniform
+              visibility: GPUShaderStage.VERTEX,
+              buffer: {},
+            }]
+        });
+
+        const pipelineLayoutDesc = { bindGroupLayouts: [
+            this.bindGroupLayout // @group(0)
+        ]};
         const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
 
         // 🎭 Shader Stages
@@ -199,6 +215,64 @@ export default class Renderer {
 
         this.commandEncoder = this.device.createCommandEncoder();
 
+        // Resources and Bind Groups
+        const cameraBuffer = this.device.createBuffer({
+            size: 144, // Room for two 4x4 matrices and a vec3
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+        
+        const modelBuffer = this.device.createBuffer({
+            size: 64, // Room for one 4x4 matrix
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+        
+        const baseColorTexture = this.device.createTexture({
+            size: { width: 256, height: 256 },
+            usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
+            format: 'rgba8unorm',
+        });
+        
+        const baseColorSampler = this.device.createSampler({
+            magFilter: "linear",
+            minFilter: "linear",
+            mipmapFilter: "linear",
+            addressModeU: "repeat",
+            addressModeV: "repeat",
+        });
+
+        const bindGroup = this.device.createBindGroup({
+        layout: this.bindGroupLayout,
+        entries: [{
+            binding: 0,
+            resource: { buffer: cameraBuffer },
+        }, {
+            binding: 1,
+            resource: { buffer: modelBuffer },
+        }],
+        });
+
+        // Place the most recent camera values in an array at the appropriate offsets.
+        const cameraArray = new Float32Array(36);
+        const projectionMatrix = mat4.create();
+        const now = Date.now() / 100 % 10;
+        mat4.perspective(projectionMatrix, 45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
+        const viewMatrix = mat4.create();
+        mat4.translate(viewMatrix, viewMatrix, [0, 0, -(now)]);
+        const cameraPosition = vec4.create();
+        vec4.set(cameraPosition, 0, 0, 0, 0);
+
+        const modelMatrix = mat4.create() as Float32Array;
+
+        cameraArray.set(projectionMatrix, 0);
+        cameraArray.set(viewMatrix, 16);
+        cameraArray.set(cameraPosition, 32);
+
+        // Update the camera uniform buffer
+        this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
+
+        // Update the model uniform buffer
+        this.device.queue.writeBuffer(modelBuffer, 0, modelMatrix);
+
         // 🖌️ Encode drawing commands
         this.passEncoder = this.commandEncoder.beginRenderPass(renderPassDesc);
         this.passEncoder.setPipeline(this.pipeline);
@@ -216,6 +290,7 @@ export default class Renderer {
             this.canvas.width,
             this.canvas.height
         );
+        this.passEncoder.setBindGroup(0, bindGroup); // @group(0)
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
@@ -274,7 +349,7 @@ export default class Renderer {
         this.mesh = mesh;
 
         console.log("gdss");
-        
+
         this.initializeResources();
         return true;
     }
