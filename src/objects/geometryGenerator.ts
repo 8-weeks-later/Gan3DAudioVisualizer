@@ -3,6 +3,10 @@ import MeshData from "./meshData";
 const PI = 3.1415926535897932384626433832795;
 const TWO_PI = 2.0 * PI;
 
+const SQRT2 = 1.41421356237309504880;
+const SQRT3 = 1.73205080756887729352;
+const SQRT6 = 2.44948974278317809820;
+
 export default class GeometryGenerator{
     makeTriangle(scale: number): MeshData{
         let positions = new Float32Array([
@@ -120,6 +124,32 @@ export default class GeometryGenerator{
             16, 17, 18, 16, 18, 19,
             // right
             20, 21, 22, 20, 22, 23,
+        ]);
+
+        return new MeshData(positions, colors, indices);
+    }
+
+    makeTetrahedron(scale: number): MeshData{
+        let positions = new Float32Array([
+            0, 0, 1, 0,
+            2 * SQRT2 / 3, 0, -1 / 3, 0,
+            -SQRT2 / 3,  SQRT6 / 3, -1 / 3, 0 ,
+            -SQRT2 / 3, -SQRT6 / 3, -1 / 3, 0
+        ]);
+        for (let i = 0; i < positions.length; i++) {
+            positions[i] *= scale;
+        }
+        let colors = new Float32Array([
+            1, 0, 0, 1,
+            0, 1, 0, 1,
+            0, 0, 1, 1,
+            1, 1, 0, 1
+        ]);
+        let indices = new Uint16Array([
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 1,
+            1, 3, 2
         ]);
 
         return new MeshData(positions, colors, indices);
