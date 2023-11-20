@@ -1,5 +1,4 @@
 import MeshData from "./meshData";
-import vec3 from "gl-matrix";
 
 const PI = 3.1415926535897932384626433832795;
 const TWO_PI = 2.0 * PI;
@@ -24,16 +23,16 @@ export default class GeometryGenerator{
 
     makeSquare(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, scale, 0.0,
-            scale, scale, 0.0,
-            scale, -scale, 0.0,
             -scale, -scale, 0.0,
+            scale, -scale, 0.0,
+            scale, scale, 0.0,
+            -scale, scale, 0.0,
         ]);
         let colors = new Float32Array([
             1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0,
+            1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0,
         ]);
         let indices = new Uint16Array([
             0, 1, 2,

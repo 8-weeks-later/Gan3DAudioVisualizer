@@ -257,7 +257,7 @@ export default class Renderer {
         const projectionMatrix = mat4.create();
         mat4.perspective(projectionMatrix, 45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
         const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -5]);
+        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
         const cameraPosition = vec4.create();
         vec4.set(cameraPosition, 0, 0, 0, 0);
 
@@ -294,7 +294,7 @@ export default class Renderer {
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
-        this.passEncoder.draw(this.mesh.numOfIndex);
+        this.passEncoder.drawIndexed(this.mesh.numOfIndex);
         this.passEncoder.end();
 
         this.queue.submit([this.commandEncoder.finish()]);
@@ -350,6 +350,7 @@ export default class Renderer {
 
         // 🎨 Model Matrix
         this.modelMatrix = mat4.create();
+        mat4.rotateX(this.modelMatrix, this.modelMatrix, 40);
 
         return true;
     }
