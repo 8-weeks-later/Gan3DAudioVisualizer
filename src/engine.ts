@@ -53,12 +53,13 @@ export default class Engine {
         this.renderer.resizeBackings();
         const meshData = new MeshData(positions, colors, indices);
         this.renderer.setMesh(meshData);
+        
+        this.renderer.render();
 
         while(1){
             // TODO: remove force delay
             // Update
             await new Promise(f => setTimeout(f, 1000)); 
-            this.renderer.render();
             console.log("Updated!!")
         }
     }

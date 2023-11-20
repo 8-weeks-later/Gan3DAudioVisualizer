@@ -1,3 +1,4 @@
+import { mat4 } from "gl-matrix";
 import Mesh from "./objects/mesh";
 import MeshData from "./objects/meshData";
 
@@ -13,8 +14,10 @@ export default class Renderer {
     depthTextureView: GPUTextureView;
     mesh : Mesh;
     pipeline: GPURenderPipeline;
+    bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
+    modelMatrix: mat4;
     constructor(canvas: any);
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
