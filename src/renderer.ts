@@ -27,6 +27,7 @@ export default class Renderer {
     bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
+    modelMatrix: mat4;
     //#endregion fields
 
     constructor(canvas) {
@@ -254,14 +255,13 @@ export default class Renderer {
         // Place the most recent camera values in an array at the appropriate offsets.
         const cameraArray = new Float32Array(36);
         const projectionMatrix = mat4.create();
-        const now = Date.now() / 100 % 10;
         mat4.perspective(projectionMatrix, 45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
         const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -(now)]);
+        mat4.translate(viewMatrix, viewMatrix, [0, 0, -5]);
         const cameraPosition = vec4.create();
         vec4.set(cameraPosition, 0, 0, 0, 0);
 
-        const modelMatrix = mat4.create() as Float32Array;
+        mat4.rotateY(this.modelMatrix, this.modelMatrix, 1 * 0.04);
 
         cameraArray.set(projectionMatrix, 0);
         cameraArray.set(viewMatrix, 16);
@@ -271,7 +271,7 @@ export default class Renderer {
         this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
 
         // Update the model uniform buffer
-        this.device.queue.writeBuffer(modelBuffer, 0, modelMatrix);
+        this.device.queue.writeBuffer(modelBuffer, 0, this.modelMatrix as Float32Array);
 
         // 🖌️ Encode drawing commands
         this.passEncoder = this.commandEncoder.beginRenderPass(renderPassDesc);
@@ -351,6 +351,10 @@ export default class Renderer {
         console.log("gdss");
 
         this.initializeResources();
+
+        // 🎨 Model Matrix
+        this.modelMatrix = mat4.create();
+
         return true;
     }
 }
