@@ -115,7 +115,7 @@ export default class Renderer {
         const colorAttribDesc: GPUVertexAttribute = {
             shaderLocation: 1, // [[location(1)]]
             offset: 0,
-            format: 'float32x3'
+            format: 'float32x4'
         };  
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
@@ -124,7 +124,7 @@ export default class Renderer {
         };
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
-            arrayStride: 4 * 3, // sizeof(float) * 3
+            arrayStride: 4 * 4, // sizeof(float) * 4
             stepMode: 'vertex'
         };
 
@@ -198,7 +198,7 @@ export default class Renderer {
         const colorAttribDesc: GPUVertexAttribute = {
             shaderLocation: 1, // [[location(1)]]
             offset: 0,
-            format: 'float32x3'
+            format: 'float32x4'
         };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
@@ -207,7 +207,7 @@ export default class Renderer {
         };
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
-            arrayStride: 4 * 3, // sizeof(float) * 3
+            arrayStride: 4 * 4, // sizeof(float) * 4
             stepMode: 'vertex'
         };
 
