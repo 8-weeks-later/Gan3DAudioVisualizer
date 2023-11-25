@@ -20,6 +20,7 @@ export default class Renderer {
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     modelMatrix: mat4;
+    cubemapTexture: GPUTexture;
     constructor(canvas: any);
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
@@ -29,5 +30,5 @@ export default class Renderer {
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;
-    setMesh(meshData: MeshData, cubeMapMesh: MeshData): boolean;
+    setMesh(meshData: MeshData, cubeMapMesh: MeshData): Promise<void>;
 }
