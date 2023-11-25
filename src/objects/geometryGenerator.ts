@@ -128,40 +128,4 @@ export default class GeometryGenerator{
 
         return new MeshData(positions, colors, indices);
     }
-
-    makeTetrahedron(scale: number): MeshData{
-        let positions = new Float32Array([
-            0, 0, 1, 0,
-            2 * SQRT2 / 3, 0, -1 / 3, 0,
-            -SQRT2 / 3,  SQRT6 / 3, -1 / 3, 0 ,
-            -SQRT2 / 3, -SQRT6 / 3, -1 / 3, 0
-        ]);
-        for (let i = 0; i < positions.length; i++) {
-            positions[i] *= scale;
-        }
-        let colors = new Float32Array([
-            1, 0, 0, 1,
-            0, 1, 0, 1,
-            0, 0, 1, 1,
-            1, 1, 0, 1
-        ]);
-        let indices = new Uint16Array([
-            0, 1, 2,
-            0, 2, 3,
-            0, 3, 1,
-            1, 3, 2
-        ]);
-
-        return new MeshData(positions, colors, indices);
-    }
-
-    // http://www.songho.ca/opengl/gl_sphere.html
-    makeSphere(scale: number, numSlices: number, numStacks: number): MeshData{
-        const dTheta = -TWO_PI / numSlices;
-        const dPhi = -PI / numStacks;
-
-        let vertices = [];
-
-        return null;
-    }
 }
