@@ -4,6 +4,7 @@ export default class Mesh{
     positionBuffer: GPUBuffer;
     colorBuffer: GPUBuffer;
     indexBuffer: GPUBuffer;
+    uvBuffer: GPUBuffer;
     numOfIndex: number;
     
     vertModule: GPUShaderModule;

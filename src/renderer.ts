@@ -117,6 +117,11 @@ export default class Renderer {
             offset: 0,
             format: 'float32x4'
         };  
+        const uvAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 2, // [[location(2)]]
+            offset: 0,
+            format: 'float32x2'
+        };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
@@ -125,6 +130,11 @@ export default class Renderer {
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
+            stepMode: 'vertex'
+        };
+        const uvBufferDesc: GPUVertexBufferLayout = {
+            attributes: [uvAttribDesc],
+            arrayStride: 4 * 2, // sizeof(float) * 2
             stepMode: 'vertex'
         };
 
@@ -157,7 +167,7 @@ export default class Renderer {
         const vertex: GPUVertexState = {
             module: this.mesh.vertModule,
             entryPoint: 'main',
-            buffers: [positionBufferDesc, colorBufferDesc]
+            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc]
         };
 
         // 🌀 Color/Blend State
@@ -200,6 +210,11 @@ export default class Renderer {
             offset: 0,
             format: 'float32x4'
         };
+        const uvAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 2, // [[location(2)]]
+            offset: 0,
+            format: 'float32x2'
+        };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
@@ -208,6 +223,11 @@ export default class Renderer {
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
+            stepMode: 'vertex'
+        };
+        const uvBufferDesc: GPUVertexBufferLayout = {
+            attributes: [uvAttribDesc],
+            arrayStride: 4 * 2, // sizeof(float) * 2
             stepMode: 'vertex'
         };
 
@@ -240,7 +260,7 @@ export default class Renderer {
         const vertex: GPUVertexState = {
             module: this.cubeMapMesh.vertModule,
             entryPoint: 'main',
-            buffers: [positionBufferDesc, colorBufferDesc]
+            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc]
         };
 
         // 🌀 Color/Blend State
@@ -387,6 +407,7 @@ export default class Renderer {
         
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
+        this.passEncoder.setVertexBuffer(2, this.mesh.uvBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.mesh.numOfIndex);
         
@@ -395,6 +416,7 @@ export default class Renderer {
         
         this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
+        this.passEncoder.setVertexBuffer(2, this.cubeMapMesh.uvBuffer);
         this.passEncoder.setIndexBuffer(this.cubeMapMesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.cubeMapMesh.numOfIndex);
         this.passEncoder.end();
@@ -428,6 +450,7 @@ export default class Renderer {
         mesh.positionBuffer = createBuffer(meshData.positions, GPUBufferUsage.VERTEX);
         mesh.colorBuffer = createBuffer(meshData.colors, GPUBufferUsage.VERTEX);
         mesh.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
+        mesh.uvBuffer = createBuffer(meshData.uv, GPUBufferUsage.VERTEX);
         mesh.numOfIndex = meshData.indices.length;
 
         // TODO: 쉐이더 적용 동적으로 변경가능하도록 변경
@@ -449,6 +472,7 @@ export default class Renderer {
         cuebMapMesh.positionBuffer = createBuffer(cubeMapMeshData.positions, GPUBufferUsage.VERTEX);
         cuebMapMesh.colorBuffer = createBuffer(cubeMapMeshData.colors, GPUBufferUsage.VERTEX);
         cuebMapMesh.indexBuffer = createBuffer(cubeMapMeshData.indices, GPUBufferUsage.INDEX);
+        cuebMapMesh.uvBuffer = createBuffer(cubeMapMeshData.uv, GPUBufferUsage.VERTEX);
         cuebMapMesh.numOfIndex = cubeMapMeshData.indices.length;
 
         const cubemapVsmDesc = {
