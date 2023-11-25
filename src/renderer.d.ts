@@ -14,7 +14,8 @@ export default class Renderer {
     depthTextureView: GPUTextureView;
     mesh : Mesh;
     cubeMapMesh : Mesh;
-    pipeline: GPURenderPipeline;
+    defaultPipeline: GPURenderPipeline;
+    cubemapPipeline: GPURenderPipeline;
     bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
@@ -23,6 +24,8 @@ export default class Renderer {
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
     initializeResources(): void;
+    createDefaultPipeline(): void;
+    createCubemapPipeline(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;

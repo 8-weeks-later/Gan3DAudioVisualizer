@@ -1,5 +1,7 @@
-import vertShaderCode from './shaders/default.vert.wgsl';
-import fragShaderCode from './shaders/default.frag.wgsl';
+import defaultVSCode from './shaders/default.vert.wgsl';
+import defaultFSCode from './shaders/default.frag.wgsl';
+import cubeMapVSCode from './shaders/cubemap.vert.wgsl';
+import cubeMapFSCode from './shaders/cubemap.frag.wgsl';
 
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
@@ -24,7 +26,9 @@ export default class Renderer {
     // 🔺 Resources
     mesh : Mesh;
     cubeMapMesh : Mesh;
-    pipeline: GPURenderPipeline;
+
+    defaultPipeline: GPURenderPipeline;
+    cubemapPipeline: GPURenderPipeline;
 
     bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
@@ -97,7 +101,11 @@ export default class Renderer {
 
     // 🍱 Initialize resources to render triangle (buffers, shaders, pipeline)
     initializeResources() {
-        // ⚗️ Graphics Pipeline
+        this.createDefaultPipeline();
+        this.createCubemapPipeline();
+    }
+
+    createDefaultPipeline() {
         // 🔣 Input Assembly
         const positionAttribDesc: GPUVertexAttribute = {
             shaderLocation: 0, // [[location(0)]]
@@ -177,7 +185,90 @@ export default class Renderer {
             primitive,
             depthStencil
         };
-        this.pipeline = this.device.createRenderPipeline(pipelineDesc);
+        this.defaultPipeline = this.device.createRenderPipeline(pipelineDesc);
+    }
+
+    createCubemapPipeline() {
+        // 🔣 Input Assembly
+        const positionAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 0, // [[location(0)]]
+            offset: 0,
+            format: 'float32x3'
+        };
+        const colorAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 1, // [[location(1)]]
+            offset: 0,
+            format: 'float32x3'
+        };
+        const positionBufferDesc: GPUVertexBufferLayout = {
+            attributes: [positionAttribDesc],
+            arrayStride: 4 * 3, // sizeof(float) * 3
+            stepMode: 'vertex'
+        };
+        const colorBufferDesc: GPUVertexBufferLayout = {
+            attributes: [colorAttribDesc],
+            arrayStride: 4 * 3, // sizeof(float) * 3
+            stepMode: 'vertex'
+        };
+
+        // 🌑 Depth
+        const depthStencil: GPUDepthStencilState = {
+            depthWriteEnabled: true,
+            depthCompare: 'less',
+            format: 'depth24plus-stencil8'
+        };
+
+        // 🦄 Uniform Data
+        this.bindGroupLayout = this.device.createBindGroupLayout({
+            entries: [{
+              binding: 0, // camera uniforms
+              visibility: GPUShaderStage.VERTEX,
+              buffer: {},
+            }, {
+              binding: 1, // model uniform
+              visibility: GPUShaderStage.VERTEX,
+              buffer: {},
+            }]
+        });
+
+        const pipelineLayoutDesc = { bindGroupLayouts: [
+            this.bindGroupLayout // @group(0)
+        ]};
+        const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
+
+        // 🎭 Shader Stages
+        const vertex: GPUVertexState = {
+            module: this.cubeMapMesh.vertModule,
+            entryPoint: 'main',
+            buffers: [positionBufferDesc, colorBufferDesc]
+        };
+
+        // 🌀 Color/Blend State
+        const colorState: GPUColorTargetState = {
+            format: 'bgra8unorm'
+        };
+
+        const fragment: GPUFragmentState = {
+            module: this.cubeMapMesh.fragModule,
+            entryPoint: 'main',
+            targets: [colorState]
+        };
+
+        // 🟨 Rasterization
+        const primitive: GPUPrimitiveState = {
+            frontFace: 'cw',
+            cullMode: 'none',
+            topology: 'triangle-list'
+        };
+
+        const pipelineDesc: GPURenderPipelineDescriptor = {
+            layout,
+            vertex,
+            fragment,
+            primitive,
+            depthStencil
+        };
+        this.cubemapPipeline = this.device.createRenderPipeline(pipelineDesc);
     }
 
     render = () => {
@@ -277,7 +368,6 @@ export default class Renderer {
 
         // 🖌️ Encode drawing commands
         this.passEncoder = this.commandEncoder.beginRenderPass(renderPassDesc);
-        this.passEncoder.setPipeline(this.pipeline);
         this.passEncoder.setViewport(
             0,
             0,
@@ -292,12 +382,16 @@ export default class Renderer {
             this.canvas.width,
             this.canvas.height
         );
+        this.passEncoder.setPipeline(this.defaultPipeline);
         this.passEncoder.setBindGroup(0, bindGroup); // @group(0)
         
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.mesh.numOfIndex);
+        
+        this.passEncoder.setPipeline(this.cubemapPipeline);
+        this.passEncoder.setBindGroup(0, bindGroup); // @group(0)
         
         this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
@@ -343,15 +437,15 @@ export default class Renderer {
 
         // TODO: 쉐이더 적용 동적으로 변경가능하도록 변경
         // 🖍️ Shaders
-        const vsmDesc = {
-            code: vertShaderCode
+        const defaultVsmDesc = {
+            code: defaultVSCode
         };
-        mesh.vertModule = this.device.createShaderModule(vsmDesc);
+        mesh.vertModule = this.device.createShaderModule(defaultVsmDesc);
 
-        const fsmDesc = {
-            code: fragShaderCode
+        const defaultFsmDesc = {
+            code: defaultFSCode
         };
-        mesh.fragModule = this.device.createShaderModule(fsmDesc);
+        mesh.fragModule = this.device.createShaderModule(defaultFsmDesc);
 
         this.mesh = mesh;
 
@@ -362,8 +456,14 @@ export default class Renderer {
         cuebMapMesh.indexBuffer = createBuffer(cubeMapMeshData.indices, GPUBufferUsage.INDEX);
         cuebMapMesh.numOfIndex = cubeMapMeshData.indices.length;
 
-        cuebMapMesh.vertModule = this.device.createShaderModule(vsmDesc);
-        cuebMapMesh.fragModule = this.device.createShaderModule(fsmDesc);
+        const cubemapVsmDesc = {
+            code: cubeMapVSCode
+        };
+        cuebMapMesh.vertModule = this.device.createShaderModule(cubemapVsmDesc);
+        const cubemapFsmDesc = {
+            code: cubeMapFSCode
+        };
+        cuebMapMesh.fragModule = this.device.createShaderModule(cubemapFsmDesc);
 
         this.cubeMapMesh = cuebMapMesh;
 
