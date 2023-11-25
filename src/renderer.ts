@@ -22,6 +22,7 @@ export default class Renderer {
 
     // 🔺 Resources
     mesh : Mesh;
+    cubeMapMesh : Mesh;
     pipeline: GPURenderPipeline;
 
     bindGroupLayout: GPUBindGroupLayout;
@@ -291,16 +292,22 @@ export default class Renderer {
             this.canvas.height
         );
         this.passEncoder.setBindGroup(0, bindGroup); // @group(0)
+        
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.mesh.numOfIndex);
+        
+        this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
+        this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
+        this.passEncoder.setIndexBuffer(this.cubeMapMesh.indexBuffer, 'uint16');
+        this.passEncoder.drawIndexed(this.cubeMapMesh.numOfIndex);
         this.passEncoder.end();
 
         this.queue.submit([this.commandEncoder.finish()]);
     }
 
-    setMesh(meshData: MeshData): boolean {
+    setMesh(meshData: MeshData, cubeMapMeshData: MeshData): boolean {
         if (meshData.colors.length != meshData.positions.length){
             console.error("invalid mesh data!!");
             return false;
@@ -346,6 +353,19 @@ export default class Renderer {
         mesh.fragModule = this.device.createShaderModule(fsmDesc);
 
         this.mesh = mesh;
+
+        let cuebMapMesh = new Mesh(cubeMapMeshData);
+        
+        cuebMapMesh.positionBuffer = createBuffer(cubeMapMeshData.positions, GPUBufferUsage.VERTEX);
+        cuebMapMesh.colorBuffer = createBuffer(cubeMapMeshData.colors, GPUBufferUsage.VERTEX);
+        cuebMapMesh.indexBuffer = createBuffer(cubeMapMeshData.indices, GPUBufferUsage.INDEX);
+        cuebMapMesh.numOfIndex = cubeMapMeshData.indices.length;
+
+        cuebMapMesh.vertModule = this.device.createShaderModule(vsmDesc);
+        cuebMapMesh.fragModule = this.device.createShaderModule(fsmDesc);
+
+        this.cubeMapMesh = cuebMapMesh;
+
         this.initializeResources();
 
         // 🎨 Model Matrix

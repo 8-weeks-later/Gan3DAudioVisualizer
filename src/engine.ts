@@ -20,7 +20,7 @@ export default class Engine {
 
         this.renderer.resizeBackings();
 
-        this.renderer.setMesh(geometryGenerator.makeBox(1));
+        this.renderer.setMesh(geometryGenerator.makeBox(1), geometryGenerator.makeBox(45));
         this.renderer.render();
 
         while(1){
