@@ -10,9 +10,9 @@ const SQRT6 = 2.44948974278317809820;
 export default class GeometryGenerator{
     makeTriangle(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0,
-            scale, -scale, 0.0,
-            0.0, scale, 0.0,
+            -scale, -scale, 0.0, 1,
+            scale, -scale, 0.0, 1,
+            0.0, scale, 0.0, 1,
         ]);
         let colors = new Float32Array([
             1.0, 0.0, 0.0,
@@ -27,10 +27,10 @@ export default class GeometryGenerator{
 
     makeSquare(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0,
-            scale, -scale, 0.0,
-            scale, scale, 0.0,
-            -scale, scale, 0.0,
+            -scale, -scale, 0.0, 1,
+            scale, -scale, 0.0, 1,
+            scale, scale, 0.0, 1,
+            -scale, scale, 0.0, 1,
         ]);
         let colors = new Float32Array([
             1.0, 1.0, 1.0,
@@ -49,35 +49,35 @@ export default class GeometryGenerator{
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
-            -scale, scale, -scale,
-            -scale, scale, scale,
-            scale, scale, scale,
-            scale, scale, -scale,
+            -scale, scale, -scale, 1,
+            -scale, scale, scale, 1,
+            scale, scale, scale, 1,
+            scale, scale, -scale, 1,
             // bottom
-            -scale, -scale, -scale,
-            scale, -scale, -scale,
-            scale, -scale, scale,
-            -scale, -scale, scale,
+            -scale, -scale, -scale, 1,
+            scale, -scale, -scale, 1,
+            scale, -scale, scale, 1,
+            -scale, -scale, scale, 1,
             // front
-            -scale, -scale, -scale,
-            -scale, scale, -scale,
-            scale, scale, -scale,
-            scale, -scale, -scale,
+            -scale, -scale, -scale, 1,
+            -scale, scale, -scale, 1,
+            scale, scale, -scale, 1,
+            scale, -scale, -scale, 1,
             // back
-            -scale, -scale, scale,
-            scale, -scale, scale,
-            scale, scale, scale,
-            -scale, scale, scale,
+            -scale, -scale, scale, 1,
+            scale, -scale, scale, 1,
+            scale, scale, scale, 1,
+            -scale, scale, scale, 1,
             // left
-            -scale, -scale, scale,
-            -scale, scale, scale,
-            -scale, scale, -scale,
-            -scale, -scale, -scale,
+            -scale, -scale, scale, 1,
+            -scale, scale, scale, 1,
+            -scale, scale, -scale, 1,
+            -scale, -scale, -scale, 1,
             // right
-            scale, -scale, scale,
-            scale, -scale, -scale,
-            scale, scale, -scale,
-            scale, scale, scale,
+            scale, -scale, scale, 1,
+            scale, -scale, -scale, 1,
+            scale, scale, -scale, 1,
+            scale, scale, scale, 1,
         ]);
         let colors = new Float32Array([
             // top - red
