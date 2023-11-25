@@ -1,5 +1,6 @@
-import vertShaderCode from './shaders/triangle.vert.wgsl';
-import fragShaderCode from './shaders/triangle.frag.wgsl';
+import vertShaderCode from './shaders/default.vert.wgsl';
+import fragShaderCode from './shaders/default.frag.wgsl';
+
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
 import { mat4, vec4 } from 'gl-matrix';
