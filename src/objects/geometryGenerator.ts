@@ -10,106 +10,117 @@ const SQRT6 = 2.44948974278317809820;
 export default class GeometryGenerator{
     makeTriangle(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0,
-            scale, -scale, 0.0,
-            0.0, scale, 0.0,
+            -scale, -scale, 0.0, 1,
+            scale, -scale, 0.0, 1,
+            0.0, scale, 0.0, 1,
         ]);
         let colors = new Float32Array([
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.5, 0.5, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.5, 0.5, 1.0, 1.0,
         ]);
         let indices = new Uint16Array([
             0, 1, 2,
         ]);
-        return new MeshData(positions, colors, indices);
+        let uv = new Float32Array([
+            0, 0,
+            1, 0,
+            0.5, 1,
+        ]);
+        return new MeshData(positions, colors, indices, uv);
     };
 
     makeSquare(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0,
-            scale, -scale, 0.0,
-            scale, scale, 0.0,
-            -scale, scale, 0.0,
+            -scale, -scale, 0.0, 1,
+            scale, -scale, 0.0, 1,
+            scale, scale, 0.0, 1,
+            -scale, scale, 0.0, 1,
         ]);
         let colors = new Float32Array([
-            1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0,
+            1.0, 1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
         ]);
         let indices = new Uint16Array([
             0, 1, 2,
             0, 2, 3,
         ]);
+        let uv = new Float32Array([
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+        ]);
 
-        return new MeshData(positions, colors, indices);
+        return new MeshData(positions, colors, indices, uv);
     }
 
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
-            -scale, scale, -scale,
-            -scale, scale, scale,
-            scale, scale, scale,
-            scale, scale, -scale,
+            -scale, scale, -scale, 1,
+            -scale, scale, scale, 1,
+            scale, scale, scale, 1,
+            scale, scale, -scale, 1,
             // bottom
-            -scale, -scale, -scale,
-            scale, -scale, -scale,
-            scale, -scale, scale,
-            -scale, -scale, scale,
+            -scale, -scale, -scale, 1,
+            scale, -scale, -scale, 1,
+            scale, -scale, scale, 1,
+            -scale, -scale, scale, 1,
             // front
-            -scale, -scale, -scale,
-            -scale, scale, -scale,
-            scale, scale, -scale,
-            scale, -scale, -scale,
+            -scale, -scale, -scale, 1,
+            -scale, scale, -scale, 1,
+            scale, scale, -scale, 1,
+            scale, -scale, -scale, 1,
             // back
-            -scale, -scale, scale,
-            scale, -scale, scale,
-            scale, scale, scale,
-            -scale, scale, scale,
+            -scale, -scale, scale, 1,
+            scale, -scale, scale, 1,
+            scale, scale, scale, 1,
+            -scale, scale, scale, 1,
             // left
-            -scale, -scale, scale,
-            -scale, scale, scale,
-            -scale, scale, -scale,
-            -scale, -scale, -scale,
+            -scale, -scale, scale, 1,
+            -scale, scale, scale, 1,
+            -scale, scale, -scale, 1,
+            -scale, -scale, -scale, 1,
             // right
-            scale, -scale, scale,
-            scale, -scale, -scale,
-            scale, scale, -scale,
-            scale, scale, scale,
+            scale, -scale, scale, 1,
+            scale, -scale, -scale, 1,
+            scale, scale, -scale, 1,
+            scale, scale, scale, 1,
         ]);
         let colors = new Float32Array([
             // top - red
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0,
             // bottom - green
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
             // front - blue
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
             // back - yellow
-            1.0, 1.0, 0.0,
-            1.0, 1.0, 0.0,
-            1.0, 1.0, 0.0,
-            1.0, 1.0, 0.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
             // left - cyan
-            0.0, 1.0, 1.0,
-            0.0, 1.0, 1.0,
-            0.0, 1.0, 1.0,
-            0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0,
             // right - magenta
-            1.0, 0.0, 1.0,
-            1.0, 0.0, 1.0,
-            1.0, 0.0, 1.0,
-            1.0, 0.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
+            1.0, 0.0, 1.0, 1.0,
         ]);
         let indices = new Uint16Array([
             // top
@@ -125,7 +136,39 @@ export default class GeometryGenerator{
             // right
             20, 21, 22, 20, 22, 23,
         ]);
+        let uv = new Float32Array([
+            // top
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            // bottom
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+            // front
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            // back
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+            // left
+            0, 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            // right
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1,
+        ]);
 
-        return new MeshData(positions, colors, indices);
+        return new MeshData(positions, colors, indices, uv);
     }
 }

@@ -13,17 +13,21 @@ export default class Renderer {
     depthTexture: GPUTexture;
     depthTextureView: GPUTextureView;
     mesh : Mesh;
-    pipeline: GPURenderPipeline;
-    bindGroupLayout: GPUBindGroupLayout;
+    cubeMapMesh : Mesh;
+    defaultPipeline: GPURenderPipeline;
+    cubemapPipeline: GPURenderPipeline;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     modelMatrix: mat4;
+    cubemapTexture: GPUTexture;
     constructor(canvas: any);
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
     initializeResources(): void;
+    createDefaultPipeline(): void;
+    createCubemapPipeline(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;
-    setMesh(meshData: MeshData): boolean;
+    setMesh(meshData: MeshData, cubeMapMesh: MeshData): Promise<void>;
 }

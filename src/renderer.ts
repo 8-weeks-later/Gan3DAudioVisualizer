@@ -1,5 +1,8 @@
-import vertShaderCode from './shaders/triangle.vert.wgsl';
-import fragShaderCode from './shaders/triangle.frag.wgsl';
+import defaultVSCode from './shaders/default.vert.wgsl';
+import defaultFSCode from './shaders/default.frag.wgsl';
+import cubeMapVSCode from './shaders/cubemap.vert.wgsl';
+import cubeMapFSCode from './shaders/cubemap.frag.wgsl';
+
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
 import { mat4, vec4 } from 'gl-matrix';
@@ -22,12 +25,15 @@ export default class Renderer {
 
     // 🔺 Resources
     mesh : Mesh;
-    pipeline: GPURenderPipeline;
+    cubeMapMesh : Mesh;
 
-    bindGroupLayout: GPUBindGroupLayout;
+    defaultPipeline: GPURenderPipeline;
+    cubemapPipeline: GPURenderPipeline;
+
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     modelMatrix: mat4;
+    cubemapTexture: GPUTexture;
     //#endregion fields
 
     constructor(canvas) {
@@ -95,26 +101,40 @@ export default class Renderer {
 
     // 🍱 Initialize resources to render triangle (buffers, shaders, pipeline)
     initializeResources() {
-        // ⚗️ Graphics Pipeline
+        this.createDefaultPipeline();
+        this.createCubemapPipeline();
+    }
+
+    createDefaultPipeline() {
         // 🔣 Input Assembly
         const positionAttribDesc: GPUVertexAttribute = {
             shaderLocation: 0, // [[location(0)]]
             offset: 0,
-            format: 'float32x3'
+            format: 'float32x4'
         };
         const colorAttribDesc: GPUVertexAttribute = {
             shaderLocation: 1, // [[location(1)]]
             offset: 0,
-            format: 'float32x3'
+            format: 'float32x4'
+        };  
+        const uvAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 2, // [[location(2)]]
+            offset: 0,
+            format: 'float32x2'
         };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
-            arrayStride: 4 * 3, // sizeof(float) * 3
+            arrayStride: 4 * 4, // sizeof(float) * 4
             stepMode: 'vertex'
         };
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
-            arrayStride: 4 * 3, // sizeof(float) * 3
+            arrayStride: 4 * 4, // sizeof(float) * 4
+            stepMode: 'vertex'
+        };
+        const uvBufferDesc: GPUVertexBufferLayout = {
+            attributes: [uvAttribDesc],
+            arrayStride: 4 * 2, // sizeof(float) * 2
             stepMode: 'vertex'
         };
 
@@ -126,7 +146,7 @@ export default class Renderer {
         };
 
         // 🦄 Uniform Data
-        this.bindGroupLayout = this.device.createBindGroupLayout({
+        const bindGroupLayout = this.device.createBindGroupLayout({
             entries: [{
               binding: 0, // camera uniforms
               visibility: GPUShaderStage.VERTEX,
@@ -139,7 +159,7 @@ export default class Renderer {
         });
 
         const pipelineLayoutDesc = { bindGroupLayouts: [
-            this.bindGroupLayout // @group(0)
+            bindGroupLayout // @group(0)
         ]};
         const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
 
@@ -147,7 +167,7 @@ export default class Renderer {
         const vertex: GPUVertexState = {
             module: this.mesh.vertModule,
             entryPoint: 'main',
-            buffers: [positionBufferDesc, colorBufferDesc]
+            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc]
         };
 
         // 🌀 Color/Blend State
@@ -175,7 +195,94 @@ export default class Renderer {
             primitive,
             depthStencil
         };
-        this.pipeline = this.device.createRenderPipeline(pipelineDesc);
+        this.defaultPipeline = this.device.createRenderPipeline(pipelineDesc);
+    }
+
+    createCubemapPipeline() {
+        // 🔣 Input Assembly
+        const positionAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 0, // [[location(0)]]
+            offset: 0,
+            format: 'float32x4'
+        };
+        const colorAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 1, // [[location(1)]]
+            offset: 0,
+            format: 'float32x4'
+        };
+        const positionBufferDesc: GPUVertexBufferLayout = {
+            attributes: [positionAttribDesc],
+            arrayStride: 4 * 4, // sizeof(float) * 4
+            stepMode: 'vertex'
+        };
+        const colorBufferDesc: GPUVertexBufferLayout = {
+            attributes: [colorAttribDesc],
+            arrayStride: 4 * 4, // sizeof(float) * 4
+            stepMode: 'vertex'
+        };
+
+        // 🌑 Depth
+        const depthStencil: GPUDepthStencilState = {
+            depthWriteEnabled: true,
+            depthCompare: 'less',
+            format: 'depth24plus-stencil8'
+        };
+
+        // 🦄 Uniform Data
+        const bindGroupLayout = this.device.createBindGroupLayout({
+            entries: [{
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX,
+                buffer: {},
+              }, {
+                binding: 1,
+                visibility: GPUShaderStage.FRAGMENT,
+                sampler: {},
+            }, {
+                binding: 2,
+                visibility: GPUShaderStage.FRAGMENT,
+                texture: {viewDimension: 'cube'},
+            }]
+        });
+
+        const pipelineLayoutDesc = { bindGroupLayouts: [
+            bindGroupLayout // @group(0)
+        ]};
+        const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
+
+        // 🎭 Shader Stages
+        const vertex: GPUVertexState = {
+            module: this.cubeMapMesh.vertModule,
+            entryPoint: 'main',
+            buffers: [positionBufferDesc, colorBufferDesc]
+        };
+
+        // 🌀 Color/Blend State
+        const colorState: GPUColorTargetState = {
+            format: 'bgra8unorm'
+        };
+
+        const fragment: GPUFragmentState = {
+            module: this.cubeMapMesh.fragModule,
+            entryPoint: 'main',
+            targets: [colorState]
+        };
+
+        // 🟨 Rasterization
+        const primitive: GPUPrimitiveState = {
+            frontFace: 'cw',
+            cullMode: 'none',
+            topology: 'triangle-list'
+        };
+
+        const pipelineDesc: GPURenderPipelineDescriptor = {
+            layout,
+            vertex,
+            fragment,
+            primitive,
+            depthStencil
+        };
+        this.cubemapPipeline = this.device.createRenderPipeline(pipelineDesc);
     }
 
     render = () => {
@@ -232,26 +339,41 @@ export default class Renderer {
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
             format: 'rgba8unorm',
         });
-        
-        const baseColorSampler = this.device.createSampler({
+
+        const sampler = this.device.createSampler({
             magFilter: "linear",
             minFilter: "linear",
             mipmapFilter: "linear",
-            addressModeU: "repeat",
-            addressModeV: "repeat",
         });
 
-        const bindGroup = this.device.createBindGroup({
-        layout: this.bindGroupLayout,
-        entries: [{
-            binding: 0,
-            resource: { buffer: cameraBuffer },
-        }, {
-            binding: 1,
-            resource: { buffer: modelBuffer },
-        }],
-        });
+        const defaultBindGroup = this.device.createBindGroup({
+            layout: this.defaultPipeline.getBindGroupLayout(0),
+            entries: [{
+                binding: 0,
+                resource: { buffer: cameraBuffer },
+            }, {
+                binding: 1,
+                resource: { buffer: modelBuffer },
+            }],
+            });
 
+        const cubeMapBindGroup = this.device.createBindGroup({
+            layout: this.cubemapPipeline.getBindGroupLayout(0),
+            entries: [{
+                binding: 0,
+                resource: { buffer: cameraBuffer },
+            }, {
+                binding: 1,
+                resource: sampler,
+                
+            }, {
+                binding: 2,
+                resource: this.cubemapTexture.createView({
+                    dimension: 'cube',
+                }),
+            }],
+            });
+ 
         // Place the most recent camera values in an array at the appropriate offsets.
         const cameraArray = new Float32Array(36);
         const projectionMatrix = mat4.create();
@@ -275,7 +397,6 @@ export default class Renderer {
 
         // 🖌️ Encode drawing commands
         this.passEncoder = this.commandEncoder.beginRenderPass(renderPassDesc);
-        this.passEncoder.setPipeline(this.pipeline);
         this.passEncoder.setViewport(
             0,
             0,
@@ -290,22 +411,28 @@ export default class Renderer {
             this.canvas.width,
             this.canvas.height
         );
-        this.passEncoder.setBindGroup(0, bindGroup); // @group(0)
+        this.passEncoder.setPipeline(this.defaultPipeline);
+        this.passEncoder.setBindGroup(0, defaultBindGroup);
+        
         this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
+        this.passEncoder.setVertexBuffer(2, this.mesh.uvBuffer);
         this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.mesh.numOfIndex);
+        
+        this.passEncoder.setPipeline(this.cubemapPipeline);
+        this.passEncoder.setBindGroup(0, cubeMapBindGroup);
+        
+        this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
+        this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
+        this.passEncoder.setIndexBuffer(this.cubeMapMesh.indexBuffer, 'uint16');
+        this.passEncoder.drawIndexed(this.cubeMapMesh.numOfIndex);
         this.passEncoder.end();
 
         this.queue.submit([this.commandEncoder.finish()]);
     }
 
-    setMesh(meshData: MeshData): boolean {
-        if (meshData.colors.length != meshData.positions.length){
-            console.error("invalid mesh data!!");
-            return false;
-        }
-        
+    async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
         const createBuffer = (
             arr: Float32Array | Uint16Array,
             usage: number
@@ -331,27 +458,82 @@ export default class Renderer {
         mesh.positionBuffer = createBuffer(meshData.positions, GPUBufferUsage.VERTEX);
         mesh.colorBuffer = createBuffer(meshData.colors, GPUBufferUsage.VERTEX);
         mesh.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
+        mesh.uvBuffer = createBuffer(meshData.uv, GPUBufferUsage.VERTEX);
         mesh.numOfIndex = meshData.indices.length;
 
         // TODO: 쉐이더 적용 동적으로 변경가능하도록 변경
         // 🖍️ Shaders
-        const vsmDesc = {
-            code: vertShaderCode
+        const defaultVsmDesc = {
+            code: defaultVSCode
         };
-        mesh.vertModule = this.device.createShaderModule(vsmDesc);
+        mesh.vertModule = this.device.createShaderModule(defaultVsmDesc);
 
-        const fsmDesc = {
-            code: fragShaderCode
+        const defaultFsmDesc = {
+            code: defaultFSCode
         };
-        mesh.fragModule = this.device.createShaderModule(fsmDesc);
+        mesh.fragModule = this.device.createShaderModule(defaultFsmDesc);
 
         this.mesh = mesh;
+
+        let cuebMapMesh = new Mesh(cubeMapMeshData);
+                
+        // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
+        const imgSrcs = [
+            '../assets/img/cubemap/posx.jpg',
+            '../assets/img/cubemap/negx.jpg',
+            '../assets/img/cubemap/posy.jpg',
+            '../assets/img/cubemap/negy.jpg',
+            '../assets/img/cubemap/posz.jpg',
+            '../assets/img/cubemap/negz.jpg',
+        ];
+        const promises = imgSrcs.map(async (src) => {
+          const response = await fetch(src);
+          return createImageBitmap(await response.blob());
+        });
+        const imageBitmaps = await Promise.all(promises);
+    
+        this.cubemapTexture = this.device.createTexture({
+          dimension: '2d',
+          // Create a 2d array texture.
+          // Assume each image has the same size.
+          size: [imageBitmaps[0].width, imageBitmaps[0].height, 6],
+          format: 'rgba8unorm',
+          usage:
+            GPUTextureUsage.TEXTURE_BINDING |
+            GPUTextureUsage.COPY_DST |
+            GPUTextureUsage.RENDER_ATTACHMENT,
+        });
+    
+        for (let i = 0; i < imageBitmaps.length; i++) {
+          const imageBitmap = imageBitmaps[i];
+          this.device.queue.copyExternalImageToTexture(
+            { source: imageBitmap },
+            { texture: this.cubemapTexture, origin: [0, 0, i] },
+            [imageBitmap.width, imageBitmap.height]
+          );
+        }
+
+        cuebMapMesh.positionBuffer = createBuffer(cubeMapMeshData.positions, GPUBufferUsage.VERTEX);
+        cuebMapMesh.colorBuffer = createBuffer(cubeMapMeshData.colors, GPUBufferUsage.VERTEX);
+        cuebMapMesh.indexBuffer = createBuffer(cubeMapMeshData.indices, GPUBufferUsage.INDEX);
+        cuebMapMesh.uvBuffer = createBuffer(cubeMapMeshData.uv, GPUBufferUsage.VERTEX);
+        cuebMapMesh.numOfIndex = cubeMapMeshData.indices.length;
+
+        const cubemapVsmDesc = {
+            code: cubeMapVSCode
+        };
+        cuebMapMesh.vertModule = this.device.createShaderModule(cubemapVsmDesc);
+        const cubemapFsmDesc = {
+            code: cubeMapFSCode
+        };
+        cuebMapMesh.fragModule = this.device.createShaderModule(cubemapFsmDesc);
+
+        this.cubeMapMesh = cuebMapMesh;
+
         this.initializeResources();
 
         // 🎨 Model Matrix
         this.modelMatrix = mat4.create();
         mat4.rotateX(this.modelMatrix, this.modelMatrix, 40);
-
-        return true;
     }
 }
