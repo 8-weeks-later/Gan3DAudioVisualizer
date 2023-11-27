@@ -30,7 +30,6 @@ export default class Renderer {
     defaultPipeline: GPURenderPipeline;
     cubemapPipeline: GPURenderPipeline;
 
-    bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     modelMatrix: mat4;
@@ -147,7 +146,7 @@ export default class Renderer {
         };
 
         // 🦄 Uniform Data
-        this.bindGroupLayout = this.device.createBindGroupLayout({
+        const bindGroupLayout = this.device.createBindGroupLayout({
             entries: [{
               binding: 0, // camera uniforms
               visibility: GPUShaderStage.VERTEX,
@@ -160,7 +159,7 @@ export default class Renderer {
         });
 
         const pipelineLayoutDesc = { bindGroupLayouts: [
-            this.bindGroupLayout // @group(0)
+            bindGroupLayout // @group(0)
         ]};
         const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
 
@@ -240,20 +239,24 @@ export default class Renderer {
         };
 
         // 🦄 Uniform Data
-        this.bindGroupLayout = this.device.createBindGroupLayout({
+        const bindGroupLayout = this.device.createBindGroupLayout({
             entries: [{
-              binding: 0, // camera uniforms
-              visibility: GPUShaderStage.VERTEX,
-              buffer: {},
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX,
+                buffer: {},
+              }, {
+                binding: 1,
+                visibility: GPUShaderStage.FRAGMENT,
+                sampler: {},
             }, {
-              binding: 1, // model uniform
-              visibility: GPUShaderStage.VERTEX,
-              buffer: {},
+                binding: 2,
+                visibility: GPUShaderStage.FRAGMENT,
+                texture: {viewDimension: 'cube'},
             }]
         });
 
         const pipelineLayoutDesc = { bindGroupLayouts: [
-            this.bindGroupLayout // @group(0)
+            bindGroupLayout // @group(0)
         ]};
         const layout = this.device.createPipelineLayout(pipelineLayoutDesc);
 
@@ -351,12 +354,10 @@ export default class Renderer {
             magFilter: "linear",
             minFilter: "linear",
             mipmapFilter: "linear",
-            addressModeU: "repeat",
-            addressModeV: "repeat",
         });
 
         const defaultBindGroup = this.device.createBindGroup({
-            layout: this.bindGroupLayout,
+            layout: this.defaultPipeline.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
                 resource: { buffer: cameraBuffer },
@@ -367,13 +368,14 @@ export default class Renderer {
             });
 
         const cubeMapBindGroup = this.device.createBindGroup({
-            layout: this.bindGroupLayout,
+            layout: this.cubemapPipeline.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
                 resource: { buffer: cameraBuffer },
             }, {
                 binding: 1,
                 resource: sampler,
+                
             }, {
                 binding: 2,
                 resource: this.cubemapTexture.createView({
@@ -381,7 +383,7 @@ export default class Renderer {
                 }),
             }],
             });
-
+ 
         // Place the most recent camera values in an array at the appropriate offsets.
         const cameraArray = new Float32Array(36);
         const projectionMatrix = mat4.create();

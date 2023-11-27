@@ -16,7 +16,6 @@ export default class Renderer {
     cubeMapMesh : Mesh;
     defaultPipeline: GPURenderPipeline;
     cubemapPipeline: GPURenderPipeline;
-    bindGroupLayout: GPUBindGroupLayout;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     modelMatrix: mat4;

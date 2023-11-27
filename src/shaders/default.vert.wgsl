@@ -15,7 +15,8 @@ struct VSOut {
 
 @vertex
 fn main(@location(0) inPos: vec3f,
-        @location(1) inColor: vec3f) -> VSOut {
+        @location(1) inColor: vec3f,
+        @location(2) uv: vec2f) -> VSOut {
     var vsOut: VSOut;
     vsOut.Position = camera.projection * camera.view * model * vec4f(inPos, 1);
     vsOut.color = inColor;

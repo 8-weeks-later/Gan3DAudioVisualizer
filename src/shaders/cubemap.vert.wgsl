@@ -6,8 +6,6 @@ struct Camera {
 };
 @group(0) @binding(0) var<uniform> camera : Camera;
 
-@group(0) @binding(1) var<uniform> model : mat4x4<f32>;
-
 struct VSOut {
     @builtin(position) Position: vec4f,
     @location(0) color: vec3f,
