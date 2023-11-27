@@ -210,11 +210,6 @@ export default class Renderer {
             offset: 0,
             format: 'float32x4'
         };
-        const uvAttribDesc: GPUVertexAttribute = {
-            shaderLocation: 2, // [[location(2)]]
-            offset: 0,
-            format: 'float32x2'
-        };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
@@ -223,11 +218,6 @@ export default class Renderer {
         const colorBufferDesc: GPUVertexBufferLayout = {
             attributes: [colorAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
-            stepMode: 'vertex'
-        };
-        const uvBufferDesc: GPUVertexBufferLayout = {
-            attributes: [uvAttribDesc],
-            arrayStride: 4 * 2, // sizeof(float) * 2
             stepMode: 'vertex'
         };
 
@@ -264,7 +254,7 @@ export default class Renderer {
         const vertex: GPUVertexState = {
             module: this.cubeMapMesh.vertModule,
             entryPoint: 'main',
-            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc]
+            buffers: [positionBufferDesc, colorBufferDesc]
         };
 
         // 🌀 Color/Blend State
@@ -435,7 +425,6 @@ export default class Renderer {
         
         this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
         this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
-        this.passEncoder.setVertexBuffer(2, this.cubeMapMesh.uvBuffer);
         this.passEncoder.setIndexBuffer(this.cubeMapMesh.indexBuffer, 'uint16');
         this.passEncoder.drawIndexed(this.cubeMapMesh.numOfIndex);
         this.passEncoder.end();
