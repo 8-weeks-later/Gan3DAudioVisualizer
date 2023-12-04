@@ -1,3 +1,5 @@
+import DefaultShaderMesh from './objects/DefaultShaderMesh';
+import CubemapShaderMesh from './objects/cubemapShaderMesh';
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
 import { mat4, vec4 } from 'gl-matrix';
@@ -247,8 +249,8 @@ export default class Renderer {
     }
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
-        this.mesh = new Mesh(meshData, "Default", this.device);
-        this.cubeMapMesh = new Mesh(cubeMapMeshData, "CubeMap", this.device);
+        this.mesh = new DefaultShaderMesh(meshData, this.device);
+        this.cubeMapMesh = new CubemapShaderMesh(cubeMapMeshData, this.device);
                 
         // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
         const imgSrcs = [

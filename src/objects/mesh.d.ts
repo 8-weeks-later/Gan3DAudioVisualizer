@@ -8,14 +8,13 @@ export default class Mesh{
     numOfIndex: number;
     
     device: GPUDevice;
+    pipeline: GPURenderPipeline;
 
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
 
-    constructor(meshData: MeshData);
+    constructor(meshData: MeshData, device: GPUDevice);
 
-    createShaderModel(shaderType): void;
+    createShaderModel(): void;
     createPipeline(): GPURenderPipeline;
-    createDefaultPipeline(): GPURenderPipeline;
-    createCubemapPipeline(): GPURenderPipeline;
 }
