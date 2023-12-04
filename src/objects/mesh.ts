@@ -1,4 +1,5 @@
 import MeshData from "./meshData";
+import { mat4 } from 'gl-matrix';
 
 export default class Mesh{
     positionBuffer: GPUBuffer;
@@ -12,6 +13,8 @@ export default class Mesh{
 
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
+
+    transform: mat4;
 
     constructor(meshData: MeshData, device: GPUDevice){
         const createBuffer = (
@@ -34,8 +37,8 @@ export default class Mesh{
             return buffer;
         };
 
+        this.transform = mat4.create();
         this.device = device;
-
         this.createShaderModel();
 
         this.positionBuffer = createBuffer(meshData.positions, GPUBufferUsage.VERTEX);
@@ -46,8 +49,6 @@ export default class Mesh{
     }
 
     createShaderModel(){}
-    
-    createPipeline(): GPURenderPipeline{
-        return null;
-    }
+    createPipeline(): GPURenderPipeline{ return null; }
+    render(passEncoder: GPURenderPassEncoder){}
 }

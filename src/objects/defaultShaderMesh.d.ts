@@ -6,4 +6,5 @@ export default class DefaultShaderMesh extends Mesh{
 
     createShaderModel(): void;
     createPipeline(): GPURenderPipeline;
+    render(passEncoder: GPURenderPassEncoder): void;
 }

@@ -29,7 +29,6 @@ export default class Renderer {
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
-    modelMatrix: mat4;
     cubemapTexture: GPUTexture;
     //#endregion fields
 
@@ -139,78 +138,6 @@ export default class Renderer {
 
         this.commandEncoder = this.device.createCommandEncoder();
 
-        // Resources and Bind Groups
-        const cameraBuffer = this.device.createBuffer({
-            size: 144, // Room for two 4x4 matrices and a vec3
-            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
-        });
-        
-        const modelBuffer = this.device.createBuffer({
-            size: 64, // Room for one 4x4 matrix
-            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
-        });
-        
-        const baseColorTexture = this.device.createTexture({
-            size: { width: 256, height: 256 },
-            usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
-            format: 'rgba8unorm',
-        });
-
-        const sampler = this.device.createSampler({
-            magFilter: "linear",
-            minFilter: "linear",
-            mipmapFilter: "linear",
-        });
-
-        const defaultBindGroup = this.device.createBindGroup({
-            layout: this.defaultPipeline.getBindGroupLayout(0),
-            entries: [{
-                binding: 0,
-                resource: { buffer: cameraBuffer },
-            }, {
-                binding: 1,
-                resource: { buffer: modelBuffer },
-            }],
-            });
-
-        const cubeMapBindGroup = this.device.createBindGroup({
-            layout: this.cubemapPipeline.getBindGroupLayout(0),
-            entries: [{
-                binding: 0,
-                resource: { buffer: cameraBuffer },
-            }, {
-                binding: 1,
-                resource: sampler,
-                
-            }, {
-                binding: 2,
-                resource: this.cubemapTexture.createView({
-                    dimension: 'cube',
-                }),
-            }],
-            });
- 
-        // Place the most recent camera values in an array at the appropriate offsets.
-        const cameraArray = new Float32Array(36);
-        const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, 45 * Math.PI / 180, this.canvas.width / this.canvas.height, 0.1, 100.0);
-        const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
-        const cameraPosition = vec4.create();
-        vec4.set(cameraPosition, 0, 0, 0, 0);
-
-        mat4.rotateY(this.modelMatrix, this.modelMatrix, 1 * 0.04);
-
-        cameraArray.set(projectionMatrix, 0);
-        cameraArray.set(viewMatrix, 16);
-        cameraArray.set(cameraPosition, 32);
-
-        // Update the camera uniform buffer
-        this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
-
-        // Update the model uniform buffer
-        this.device.queue.writeBuffer(modelBuffer, 0, this.modelMatrix as Float32Array);
-
         // 🖌️ Encode drawing commands
         this.passEncoder = this.commandEncoder.beginRenderPass(renderPassDesc);
         this.passEncoder.setViewport(
@@ -227,22 +154,9 @@ export default class Renderer {
             this.canvas.width,
             this.canvas.height
         );
-        this.passEncoder.setPipeline(this.defaultPipeline);
-        this.passEncoder.setBindGroup(0, defaultBindGroup);
-        
-        this.passEncoder.setVertexBuffer(0, this.mesh.positionBuffer);
-        this.passEncoder.setVertexBuffer(1, this.mesh.colorBuffer);
-        this.passEncoder.setVertexBuffer(2, this.mesh.uvBuffer);
-        this.passEncoder.setIndexBuffer(this.mesh.indexBuffer, 'uint16');
-        this.passEncoder.drawIndexed(this.mesh.numOfIndex);
-        
-        this.passEncoder.setPipeline(this.cubemapPipeline);
-        this.passEncoder.setBindGroup(0, cubeMapBindGroup);
-        
-        this.passEncoder.setVertexBuffer(0, this.cubeMapMesh.positionBuffer);
-        this.passEncoder.setVertexBuffer(1, this.cubeMapMesh.colorBuffer);
-        this.passEncoder.setIndexBuffer(this.cubeMapMesh.indexBuffer, 'uint16');
-        this.passEncoder.drawIndexed(this.cubeMapMesh.numOfIndex);
+
+        this.mesh.render(this.passEncoder);
+        this.cubeMapMesh.render(this.passEncoder);
         this.passEncoder.end();
 
         this.queue.submit([this.commandEncoder.finish()]);
@@ -250,48 +164,10 @@ export default class Renderer {
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
         this.mesh = new DefaultShaderMesh(meshData, this.device);
-        this.cubeMapMesh = new CubemapShaderMesh(cubeMapMeshData, this.device);
-                
-        // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
-        const imgSrcs = [
-            '../assets/img/cubemap/posx.jpg',
-            '../assets/img/cubemap/negx.jpg',
-            '../assets/img/cubemap/posy.jpg',
-            '../assets/img/cubemap/negy.jpg',
-            '../assets/img/cubemap/posz.jpg',
-            '../assets/img/cubemap/negz.jpg',
-        ];
-        const promises = imgSrcs.map(async (src) => {
-          const response = await fetch(src);
-          return createImageBitmap(await response.blob());
-        });
-        const imageBitmaps = await Promise.all(promises);
-    
-        this.cubemapTexture = this.device.createTexture({
-          dimension: '2d',
-          // Create a 2d array texture.
-          // Assume each image has the same size.
-          size: [imageBitmaps[0].width, imageBitmaps[0].height, 6],
-          format: 'rgba8unorm',
-          usage:
-            GPUTextureUsage.TEXTURE_BINDING |
-            GPUTextureUsage.COPY_DST |
-            GPUTextureUsage.RENDER_ATTACHMENT,
-        });
-    
-        for (let i = 0; i < imageBitmaps.length; i++) {
-          const imageBitmap = imageBitmaps[i];
-          this.device.queue.copyExternalImageToTexture(
-            { source: imageBitmap },
-            { texture: this.cubemapTexture, origin: [0, 0, i] },
-            [imageBitmap.width, imageBitmap.height]
-          );
-        }
+        let cubeMapMesh = new CubemapShaderMesh(cubeMapMeshData, this.device);
+        await cubeMapMesh.loadCubeMap();
+        this.cubeMapMesh = cubeMapMesh;
 
         this.createPipeline();
-
-        // 🎨 Model Matrix
-        this.modelMatrix = mat4.create();
-        mat4.rotateX(this.modelMatrix, this.modelMatrix, 40);
     }
 }

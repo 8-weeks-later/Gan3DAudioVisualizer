@@ -1,4 +1,5 @@
 import MeshData from "./meshData";
+import { mat4 } from 'gl-matrix';
 
 export default class Mesh{
     positionBuffer: GPUBuffer;
@@ -13,8 +14,11 @@ export default class Mesh{
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
 
+    transform: mat4;
+
     constructor(meshData: MeshData, device: GPUDevice);
 
     createShaderModel(): void;
     createPipeline(): GPURenderPipeline;
+    render(passEncoder: GPURenderPassEncoder): void;
 }

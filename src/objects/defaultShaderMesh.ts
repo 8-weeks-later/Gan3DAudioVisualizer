@@ -1,12 +1,17 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
+import { mat4, vec4 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
 import fsCode from '../shaders/default.frag.wgsl';
+import { canvasSize } from "../const";
 
 export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
         super(meshData, device);
+
+        // tmp
+        mat4.rotateX(this.transform, this.transform, 40);
     }
 
     createShaderModel(){
@@ -104,6 +109,60 @@ export default class DefaultShaderMesh extends Mesh{
             primitive,
             depthStencil
         };
-        return this.device.createRenderPipeline(pipelineDesc);
+
+        this.pipeline = this.device.createRenderPipeline(pipelineDesc);
+        return this.pipeline;
+    }
+    
+    render(passEncoder: GPURenderPassEncoder){
+        const cameraBuffer = this.device.createBuffer({
+            size: 144, // Room for two 4x4 matrices and a vec3
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+        
+        const modelBuffer = this.device.createBuffer({
+            size: 64, // Room for one 4x4 matrix
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+        
+        const bindGroup = this.device.createBindGroup({
+            layout: this.pipeline.getBindGroupLayout(0),
+            entries: [{
+                binding: 0,
+                resource: { buffer: cameraBuffer },
+            }, {
+                binding: 1,
+                resource: { buffer: modelBuffer },
+            }],
+            });
+        
+        const cameraArray = new Float32Array(36);
+        const projectionMatrix = mat4.create();
+        mat4.perspective(projectionMatrix, 45 * Math.PI / 180, canvasSize / canvasSize, 0.1, 100.0);
+        const viewMatrix = mat4.create();
+        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
+        const cameraPosition = vec4.create();
+        vec4.set(cameraPosition, 0, 0, 0, 0);
+
+        mat4.rotateY(this.transform, this.transform, 1 * 0.04);
+
+        cameraArray.set(projectionMatrix, 0);
+        cameraArray.set(viewMatrix, 16);
+        cameraArray.set(cameraPosition, 32);
+
+        // Update the camera uniform buffer
+        this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
+
+        // Update the model uniform buffer
+        this.device.queue.writeBuffer(modelBuffer, 0, this.transform as Float32Array);
+        
+        passEncoder.setPipeline(this.pipeline);
+        passEncoder.setBindGroup(0, bindGroup);
+        
+        passEncoder.setVertexBuffer(0, this.positionBuffer);
+        passEncoder.setVertexBuffer(1, this.colorBuffer);
+        passEncoder.setVertexBuffer(2, this.uvBuffer);
+        passEncoder.setIndexBuffer(this.indexBuffer, 'uint16');
+        passEncoder.drawIndexed(this.numOfIndex);
     }
 }

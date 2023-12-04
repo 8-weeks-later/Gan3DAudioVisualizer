@@ -18,7 +18,6 @@ export default class Renderer {
     cubemapPipeline: GPURenderPipeline;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
-    modelMatrix: mat4;
     cubemapTexture: GPUTexture;
     constructor(canvas: any);
     start(): Promise<void>;
