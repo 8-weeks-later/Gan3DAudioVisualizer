@@ -1,4 +1,4 @@
-import { canvasSize } from "./const";
+import { canvasSize } from "./setting";
 import GeometryGenerator from "./objects/geometryGenerator";
 import Renderer from "./renderer";
 

@@ -4,7 +4,7 @@ import { mat4, vec4 } from 'gl-matrix';
 
 import vsCode from '../shaders/cubemap.vert.wgsl';
 import fsCode from '../shaders/cubemap.frag.wgsl';
-import { canvasSize } from "../const";
+import CameraSetting, { canvasSize } from "../setting";
 
 export default class CubemapShaderMesh extends Mesh{
     cubemapTexture: GPUTexture;
@@ -176,7 +176,7 @@ export default class CubemapShaderMesh extends Mesh{
         
         const cameraArray = new Float32Array(36);
         const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, 45 * Math.PI / 180, canvasSize / canvasSize, 0.1, 100.0);
+        mat4.perspective(projectionMatrix, CameraSetting.fovRadian, canvasSize / canvasSize, CameraSetting.near, CameraSetting.far);
         const viewMatrix = mat4.create();
         mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
         const cameraPosition = vec4.create();

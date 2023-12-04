@@ -1,8 +1,7 @@
-import DefaultShaderMesh from './objects/DefaultShaderMesh';
+import DefaultShaderMesh from './objects/defaultShaderMesh';
 import CubemapShaderMesh from './objects/cubemapShaderMesh';
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
-import { mat4, vec4 } from 'gl-matrix';
 
 export default class Renderer {
     //#region fields
@@ -157,6 +156,7 @@ export default class Renderer {
 
         this.mesh.render(this.passEncoder);
         this.cubeMapMesh.render(this.passEncoder);
+        
         this.passEncoder.end();
 
         this.queue.submit([this.commandEncoder.finish()]);
