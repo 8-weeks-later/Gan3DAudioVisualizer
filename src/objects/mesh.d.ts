@@ -14,5 +14,8 @@ export default class Mesh{
 
     constructor(meshData: MeshData);
 
-    createShaderModel(shaderType);
+    createShaderModel(shaderType): void;
+    createPipeline(): GPURenderPipeline;
+    createDefaultPipeline(): GPURenderPipeline;
+    createCubemapPipeline(): GPURenderPipeline;
 }

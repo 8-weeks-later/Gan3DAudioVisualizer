@@ -24,8 +24,6 @@ export default class Renderer {
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
     initializeResources(): void;
-    createDefaultPipeline(): void;
-    createCubemapPipeline(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;
