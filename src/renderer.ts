@@ -1,8 +1,3 @@
-import defaultVSCode from './shaders/default.vert.wgsl';
-import defaultFSCode from './shaders/default.frag.wgsl';
-import cubeMapVSCode from './shaders/cubemap.vert.wgsl';
-import cubeMapFSCode from './shaders/cubemap.frag.wgsl';
-
 import Mesh from './objects/mesh';
 import MeshData from './objects/meshData';
 import { mat4, vec4 } from 'gl-matrix';
@@ -433,49 +428,9 @@ export default class Renderer {
     }
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
-        const createBuffer = (
-            arr: Float32Array | Uint16Array,
-            usage: number
-        ) => {
-            // 📏 Align to 4 bytes (thanks @chrimsonite)
-            let desc = {
-                size: (arr.byteLength + 3) & ~3,
-                usage,
-                mappedAtCreation: true
-            };
-            let buffer = this.device.createBuffer(desc);
-            const writeArray =
-                arr instanceof Uint16Array
-                    ? new Uint16Array(buffer.getMappedRange())
-                    : new Float32Array(buffer.getMappedRange());
-            writeArray.set(arr);
-            buffer.unmap();
-            return buffer;
-        };
+        this.mesh = new Mesh(meshData, "Default", this.device);
 
-        let mesh = new Mesh(meshData);
-        
-        mesh.positionBuffer = createBuffer(meshData.positions, GPUBufferUsage.VERTEX);
-        mesh.colorBuffer = createBuffer(meshData.colors, GPUBufferUsage.VERTEX);
-        mesh.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
-        mesh.uvBuffer = createBuffer(meshData.uv, GPUBufferUsage.VERTEX);
-        mesh.numOfIndex = meshData.indices.length;
-
-        // TODO: 쉐이더 적용 동적으로 변경가능하도록 변경
-        // 🖍️ Shaders
-        const defaultVsmDesc = {
-            code: defaultVSCode
-        };
-        mesh.vertModule = this.device.createShaderModule(defaultVsmDesc);
-
-        const defaultFsmDesc = {
-            code: defaultFSCode
-        };
-        mesh.fragModule = this.device.createShaderModule(defaultFsmDesc);
-
-        this.mesh = mesh;
-
-        let cuebMapMesh = new Mesh(cubeMapMeshData);
+        let cuebMapMesh = new Mesh(cubeMapMeshData, "CubeMap", this.device);
                 
         // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
         const imgSrcs = [
@@ -512,21 +467,6 @@ export default class Renderer {
             [imageBitmap.width, imageBitmap.height]
           );
         }
-
-        cuebMapMesh.positionBuffer = createBuffer(cubeMapMeshData.positions, GPUBufferUsage.VERTEX);
-        cuebMapMesh.colorBuffer = createBuffer(cubeMapMeshData.colors, GPUBufferUsage.VERTEX);
-        cuebMapMesh.indexBuffer = createBuffer(cubeMapMeshData.indices, GPUBufferUsage.INDEX);
-        cuebMapMesh.uvBuffer = createBuffer(cubeMapMeshData.uv, GPUBufferUsage.VERTEX);
-        cuebMapMesh.numOfIndex = cubeMapMeshData.indices.length;
-
-        const cubemapVsmDesc = {
-            code: cubeMapVSCode
-        };
-        cuebMapMesh.vertModule = this.device.createShaderModule(cubemapVsmDesc);
-        const cubemapFsmDesc = {
-            code: cubeMapFSCode
-        };
-        cuebMapMesh.fragModule = this.device.createShaderModule(cubemapFsmDesc);
 
         this.cubeMapMesh = cuebMapMesh;
 

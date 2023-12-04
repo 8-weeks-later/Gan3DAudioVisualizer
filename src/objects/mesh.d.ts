@@ -7,7 +7,12 @@ export default class Mesh{
     uvBuffer: GPUBuffer;
     numOfIndex: number;
     
+    device: GPUDevice;
+
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
+
     constructor(meshData: MeshData);
+
+    createShaderModel(shaderType);
 }
