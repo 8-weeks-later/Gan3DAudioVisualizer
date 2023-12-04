@@ -1,3 +1,4 @@
+import { canvasSize } from "./setting";
 import GeometryGenerator from "./objects/geometryGenerator";
 import Renderer from "./renderer";
 
@@ -32,6 +33,6 @@ export default class Engine {
     }
 
     initCanvas(canvas: HTMLCanvasElement){
-        canvas.width = canvas.height = 640;
+        canvas.width = canvas.height = canvasSize;
     }
 }
