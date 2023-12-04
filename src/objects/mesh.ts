@@ -61,42 +61,27 @@ export default class Mesh{
     createShaderModel(){
         switch(this.shaderType){
             case "Default":
-                const defaultVsmDesc = {
-                    code: defaultVSCode
-                };
-                this.vertModule = this.device.createShaderModule(defaultVsmDesc);
-        
-                const defaultFsmDesc = {
-                    code: defaultFSCode
-                };
-                this.fragModule = this.device.createShaderModule(defaultFsmDesc);
+                this.vertModule = this.device.createShaderModule({code: defaultVSCode});
+                this.fragModule = this.device.createShaderModule({code: defaultFSCode});
                 break;
             case "CubeMap": 
-                const cubemapVsmDesc = {
-                    code: cubeMapVSCode
-                };
-                this.vertModule = this.device.createShaderModule(cubemapVsmDesc);
-                const cubemapFsmDesc = {
-                    code: cubeMapFSCode
-                };
-                this.fragModule = this.device.createShaderModule(cubemapFsmDesc);
+                this.vertModule = this.device.createShaderModule({code: cubeMapVSCode});
+                this.fragModule = this.device.createShaderModule({code: cubeMapFSCode});
                 break;
         }
     }
     
     createPipeline(): GPURenderPipeline{
-        let rst = null;
         switch(this.shaderType){
             case "Default":
-                rst = this.createDefaultPipeline();
-                break;
+                return this.createDefaultPipeline();
             case "CubeMap":
-                rst = this.createCubemapPipeline();
-                break;
+                return  this.createCubemapPipeline();
         }
-        return rst;
+        return null;
     }
 
+//#region Create Pipeline
     createDefaultPipeline(): GPURenderPipeline{
         // 🔣 Input Assembly
         const positionAttribDesc: GPUVertexAttribute = {
@@ -276,4 +261,5 @@ export default class Mesh{
         };
         return this.device.createRenderPipeline(pipelineDesc);
     }
+//#endregion Create Pipeline
 }

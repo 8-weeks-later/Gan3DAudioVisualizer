@@ -248,8 +248,7 @@ export default class Renderer {
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
         this.mesh = new Mesh(meshData, "Default", this.device);
-
-        let cuebMapMesh = new Mesh(cubeMapMeshData, "CubeMap", this.device);
+        this.cubeMapMesh = new Mesh(cubeMapMeshData, "CubeMap", this.device);
                 
         // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
         const imgSrcs = [
@@ -286,8 +285,6 @@ export default class Renderer {
             [imageBitmap.width, imageBitmap.height]
           );
         }
-
-        this.cubeMapMesh = cuebMapMesh;
 
         this.createPipeline();
 
