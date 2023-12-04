@@ -46,9 +46,11 @@ export default class Mesh{
         this.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
         this.uvBuffer = createBuffer(meshData.uv, GPUBufferUsage.VERTEX);
         this.numOfIndex = meshData.indices.length;
+
+        this.createPipeline();
     }
 
     createShaderModel(){}
-    createPipeline(): GPURenderPipeline{ return null; }
+    createPipeline(){}
     render(passEncoder: GPURenderPassEncoder){}
 }

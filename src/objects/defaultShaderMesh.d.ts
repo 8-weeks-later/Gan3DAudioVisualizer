@@ -5,6 +5,6 @@ export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice);
 
     createShaderModel(): void;
-    createPipeline(): GPURenderPipeline;
+    createPipeline(): void;
     render(passEncoder: GPURenderPassEncoder): void;
 }

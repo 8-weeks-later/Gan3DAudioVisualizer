@@ -19,12 +19,7 @@ export default class Renderer {
     depthTexture: GPUTexture;
     depthTextureView: GPUTextureView;
 
-    // 🔺 Resources
-    mesh : Mesh;
-    cubeMapMesh : Mesh;
-
-    defaultPipeline: GPURenderPipeline;
-    cubemapPipeline: GPURenderPipeline;
+    meshes: Mesh[];
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
@@ -35,15 +30,9 @@ export default class Renderer {
         this.canvas = canvas;
     }
 
-    // 🏎️ Start the rendering engine
-    async start() {
-        if (await this.initializeAPI()) {
-            this.resizeBackings();
-        }
-    }
-
     // 🌟 Initialize WebGPU
     async initializeAPI(): Promise<boolean> {
+        this.meshes = [];
         try {
             // 🏭 Entry to WebGPU
             const entry: GPU = navigator.gpu; 
@@ -92,11 +81,6 @@ export default class Renderer {
 
         this.depthTexture = this.device.createTexture(depthTextureDesc);
         this.depthTextureView = this.depthTexture.createView();
-    }
-
-    createPipeline() {
-        this.defaultPipeline = this.mesh.createPipeline();
-        this.cubemapPipeline = this.cubeMapMesh.createPipeline();
     }
 
     render = () => {
@@ -154,20 +138,20 @@ export default class Renderer {
             this.canvas.height
         );
 
-        this.mesh.render(this.passEncoder);
-        this.cubeMapMesh.render(this.passEncoder);
+        this.meshes.forEach(mesh => {
+            mesh.render(this.passEncoder);
+        });
         
         this.passEncoder.end();
-
         this.queue.submit([this.commandEncoder.finish()]);
     }
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
-        this.mesh = new DefaultShaderMesh(meshData, this.device);
+        let mesh = new DefaultShaderMesh(meshData, this.device);
         let cubeMapMesh = new CubemapShaderMesh(cubeMapMeshData, this.device);
         await cubeMapMesh.loadCubeMap();
-        this.cubeMapMesh = cubeMapMesh;
-
-        this.createPipeline();
+        
+        this.meshes.push(mesh);
+        this.meshes.push(cubeMapMesh);
     }
 }

@@ -12,17 +12,12 @@ export default class Renderer {
     colorTextureView: GPUTextureView;
     depthTexture: GPUTexture;
     depthTextureView: GPUTextureView;
-    mesh : Mesh;
-    cubeMapMesh : Mesh;
-    defaultPipeline: GPURenderPipeline;
-    cubemapPipeline: GPURenderPipeline;
+    meshes: Mesh[];
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     cubemapTexture: GPUTexture;
     constructor(canvas: any);
-    start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
-    createPipeline(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;

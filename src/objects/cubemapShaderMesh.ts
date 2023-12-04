@@ -56,7 +56,7 @@ export default class CubemapShaderMesh extends Mesh{
         this.fragModule = this.device.createShaderModule({code: fsCode});
     }
 
-    createPipeline(): GPURenderPipeline {
+    createPipeline(){
         // 🔣 Input Assembly
         const positionAttribDesc: GPUVertexAttribute = {
             shaderLocation: 0, // [[location(0)]]
@@ -142,7 +142,6 @@ export default class CubemapShaderMesh extends Mesh{
         };
 
         this.pipeline = this.device.createRenderPipeline(pipelineDesc);
-        return this.pipeline;
     }
 
     render(passEncoder: GPURenderPassEncoder){
@@ -181,8 +180,6 @@ export default class CubemapShaderMesh extends Mesh{
         mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
         const cameraPosition = vec4.create();
         vec4.set(cameraPosition, 0, 0, 0, 0);
-
-        mat4.rotateY(this.transform, this.transform, 1 * 0.04);
 
         cameraArray.set(projectionMatrix, 0);
         cameraArray.set(viewMatrix, 16);

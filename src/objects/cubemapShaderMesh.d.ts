@@ -8,6 +8,6 @@ export default class CubemapShaderMesh extends Mesh{
 
     loadCubeMap(): Promise<void>;
     createShaderModel(): void;
-    createPipeline(): GPURenderPipeline;
+    createPipeline(): void;
     render(passEncoder: GPURenderPassEncoder): void;
 }

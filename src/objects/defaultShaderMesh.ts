@@ -19,7 +19,7 @@ export default class DefaultShaderMesh extends Mesh{
         this.fragModule = this.device.createShaderModule({code: fsCode});
     }
 
-    createPipeline(): GPURenderPipeline {
+    createPipeline(){
         // 🔣 Input Assembly
         const positionAttribDesc: GPUVertexAttribute = {
             shaderLocation: 0, // [[location(0)]]
@@ -111,7 +111,6 @@ export default class DefaultShaderMesh extends Mesh{
         };
 
         this.pipeline = this.device.createRenderPipeline(pipelineDesc);
-        return this.pipeline;
     }
     
     render(passEncoder: GPURenderPassEncoder){
