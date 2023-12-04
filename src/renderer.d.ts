@@ -23,7 +23,7 @@ export default class Renderer {
     constructor(canvas: any);
     start(): Promise<void>;
     initializeAPI(): Promise<boolean>;
-    initializeResources(): void;
+    createPipeline(): void;
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;

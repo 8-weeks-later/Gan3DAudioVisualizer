@@ -94,8 +94,7 @@ export default class Renderer {
         this.depthTextureView = this.depthTexture.createView();
     }
 
-    // 🍱 Initialize resources to render triangle (buffers, shaders, pipeline)
-    initializeResources() {
+    createPipeline() {
         this.defaultPipeline = this.mesh.createPipeline();
         this.cubemapPipeline = this.cubeMapMesh.createPipeline();
     }
@@ -290,7 +289,7 @@ export default class Renderer {
 
         this.cubeMapMesh = cuebMapMesh;
 
-        this.initializeResources();
+        this.createPipeline();
 
         // 🎨 Model Matrix
         this.modelMatrix = mat4.create();
