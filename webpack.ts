@@ -69,7 +69,7 @@ if (!argv.reduce((prev, cur) => prev || cur === '--watch', false)) {
             // @ts-ignore
             let statsJson = stats.toJson();
             console.log(
-                '❌' + ' · Error · ' + 'webgpu-seed failed to compile:'
+                '❌' + ' · Error · ' + 'gan3d-audio-visualizer failed to compile:'
             );
             // @ts-ignore
             for (let error of statsJson.errors) {
@@ -95,7 +95,7 @@ if (!argv.reduce((prev, cur) => prev || cur === '--watch', false)) {
             // @ts-ignore
             let statsJson = stats.toJson();
             console.log(
-                '❌' + ' · Error · ' + 'webgpu-seed failed to compile:'
+                '❌' + ' · Error · ' + 'gan3d-audio-visualizer failed to compile:'
             );
             // @ts-ignore
             for (let error of statsJson.errors) {
@@ -107,7 +107,7 @@ if (!argv.reduce((prev, cur) => prev || cur === '--watch', false)) {
         console.log(
             '✔️️' +
                 '  · Success · ' +
-                'webgpu-seed' +
+                'gan3d-audio-visualizer' +
                 (isProduction ? ' (production) ' : ' (development) ') +
                 'built in ' +
                 // @ts-ignore
