@@ -12,7 +12,6 @@ export default class Engine {
         this.canvas = canvas;
         this.initCanvas(canvas);
         this.renderer = new Renderer(canvas);
-        this.audioAnalyser = new AudioAnalyser(64, 44100, 512);
     }
     
     async appRun() : Promise<void>{
@@ -43,6 +42,13 @@ export default class Engine {
     }
 
     async analyseAudio(): Promise<void>{
-        const data = await this.audioAnalyser.analyser();
+        if (this.audioAnalyser == null) {
+            this.audioAnalyser = new AudioAnalyser(64, 44100, 512);
+        }
+
+        const data = await this.audioAnalyser.analyse();
+
+        // TODO: remove todo
+        console.log(data);
     }
 }

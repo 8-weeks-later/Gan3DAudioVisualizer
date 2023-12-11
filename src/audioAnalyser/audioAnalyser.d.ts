@@ -7,5 +7,5 @@ export default class AudioFileAnalyser {
     audioContext: AudioContext;
 
     constructor(chunkSize: number, fftSize: number);
-    analyser(): Promise<number[]>;
+    analyse(): Promise<number[]>;
 }

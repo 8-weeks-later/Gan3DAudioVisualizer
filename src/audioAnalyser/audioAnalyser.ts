@@ -9,20 +9,20 @@ export default class AudioFileAnalyser {
     audioContext: AudioContext;
 
     constructor(chunkLength: number, sampleRate: number, audioSampleSize: number){
-        this.input = document.querySelector("input");
         this.chunkLength = chunkLength;
         this.sampleRate = sampleRate; // 44100
         this.audioSampleSize = audioSampleSize; // 64 or 512
 
+        this.input = document.querySelector("input");
         this.audioContext = new AudioContext();
     }
 
     // https://meyda.js.org/audio-features#amplitudespectrum
     // TODO: 문서 정리
     // TODO: amplitudeSpectrum과 powerSpectrum의 비교
-    async analyser(): Promise<number[]>{
+    async analyse(): Promise<number[]>{
         const array = [];
-        fetch(URL.createObjectURL(this.input.files[0]))
+        await fetch(URL.createObjectURL(this.input.files[0]))
             .then((response) => response.arrayBuffer())
             .then((arrayBuffer) => {
                 var offlineAudioContext = new OfflineAudioContext({
