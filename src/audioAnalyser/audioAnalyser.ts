@@ -1,7 +1,6 @@
 import Meyda from "meyda";
 
 export default class AudioFileAnalyser {
-    margin: number;
     chunkLength: number;
     sampleRate: number;
     audioSampleSize: number;
@@ -9,9 +8,8 @@ export default class AudioFileAnalyser {
     input: HTMLInputElement;
     audioContext: AudioContext;
 
-    constructor(margin: number, chunkLength: number, sampleRate: number, audioSampleSize: number){
+    constructor(chunkLength: number, sampleRate: number, audioSampleSize: number){
         this.input = document.querySelector("input");
-        this.margin = margin;
         this.chunkLength = chunkLength;
         this.sampleRate = sampleRate; // 44100
         this.audioSampleSize = audioSampleSize; // 64 or 512

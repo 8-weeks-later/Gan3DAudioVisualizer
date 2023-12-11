@@ -1,5 +1,4 @@
 export default class AudioFileAnalyser {
-    margin: number;
     chunkLength: number;
     sampleRate: number;
     audioSampleSize: number;
@@ -7,6 +6,6 @@ export default class AudioFileAnalyser {
     input: HTMLInputElement;
     audioContext: AudioContext;
 
-    constructor(margin: number, chunkSize: number, fftSize: number);
+    constructor(chunkSize: number, fftSize: number);
     analyser(): Promise<number[]>;
 }
