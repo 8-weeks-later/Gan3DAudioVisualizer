@@ -19,6 +19,9 @@ export default class AudioFileAnalyser {
         this.audioContext = new AudioContext();
     }
 
+    // https://meyda.js.org/audio-features#amplitudespectrum
+    // TODO: 문서 정리
+    // TODO: amplitudeSpectrum과 powerSpectrum의 비교
     async analyser(): Promise<number[]>{
         const array = [];
         fetch(URL.createObjectURL(this.input.files[0]))
@@ -37,7 +40,12 @@ export default class AudioFileAnalyser {
 
                 for (let i = 0; i < audioBuffer.length; i += audioSampleSize) {
                     audioBuffer.copyFromChannel(signal, 0, i);
-                    const amplitudeSpectrum = Meyda.extract('amplitudeSpectrum', signal) as unknown as Float32Array;
+                    const extractedData = Meyda.extract('amplitudeSpectrum', signal)
+                    const amplitudeSpectrum = extractedData as unknown as Float32Array;
+
+                    if (amplitudeSpectrum == null || amplitudeSpectrum.length === 0) {
+                        continue;
+                    }
 
                     let j = 0;
                     const length = amplitudeSpectrum.length;
