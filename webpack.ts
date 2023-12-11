@@ -18,7 +18,7 @@ let config: webpack.Configuration = {
         path: path.resolve(__dirname, 'dist')
     },
     resolve: {
-        extensions: ['.ts', '.tsx', 'js'],
+        extensions: ['.ts', '.tsx', '.js'],
         modules: [path.resolve(__dirname, 'src'), 'node_modules']
     },
     module: {
