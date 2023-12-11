@@ -1,21 +1,27 @@
 import { canvasSize } from "./setting";
 import GeometryGenerator from "./objects/geometryGenerator";
 import Renderer from "./renderer";
+import AudioAnalyser from "./audioAnalyser/audioAnalyser";
 
 export default class Engine {
     canvas: HTMLCanvasElement;
     renderer: Renderer;
+    audioAnalyser: AudioAnalyser;
 
     constructor(canvas) {
         this.canvas = canvas;
         this.initCanvas(canvas);
         this.renderer = new Renderer(canvas);
+        this.audioAnalyser = new AudioAnalyser(64, 44100, 512);
     }
     
     async appRun() : Promise<void>{
         if (!(await this.renderer.initializeAPI())) {
             return;
         }
+
+        const input = document.querySelector("input");
+        input.addEventListener("input", this.analyseAudio);
 
         const geometryGenerator = new GeometryGenerator;
 
@@ -34,5 +40,9 @@ export default class Engine {
 
     initCanvas(canvas: HTMLCanvasElement){
         canvas.width = canvas.height = canvasSize;
+    }
+
+    async analyseAudio(): Promise<void>{
+        const data = await this.audioAnalyser.analyser();
     }
 }
