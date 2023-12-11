@@ -19,6 +19,6 @@ export default class Mesh{
     constructor(meshData: MeshData, device: GPUDevice);
 
     createShaderModel(): void;
-    createPipeline(): GPURenderPipeline;
+    createPipeline(): void;
     render(passEncoder: GPURenderPassEncoder): void;
 }
