@@ -57,6 +57,52 @@ export default class GeometryGenerator{
         return new MeshData(positions, colors, indices, uv);
     }
 
+    makePlane(scale: number, xSize: number, ySize: number): MeshData{
+        let positions = new Float32Array((xSize + 1) * (ySize + 1) * 4);
+        let colors = new Float32Array((xSize + 1) * (ySize + 1) * 4);
+        let indices = new Uint16Array(xSize * ySize * 6);
+        let uv = new Float32Array((xSize + 1) * (ySize + 1) * 4);
+
+        for(let y = 0; y <= ySize; y++){
+            for(let x = 0; x <= xSize; x++){
+                let i = y * (xSize + 1) + x;
+                let u = x / xSize;
+                let v = y / ySize;
+
+                positions[i * 4 + 0] = scale * u;
+                positions[i * 4 + 1] = scale * v;
+                positions[i * 4 + 2] = 0.0;
+                positions[i * 4 + 3] = 1.0;
+
+                colors[i * 4 + 0] = x / xSize;
+                colors[i * 4 + 1] = y / ySize;
+                colors[i * 4 + 2] = 0.0;
+                colors[i * 4 + 3] = 1.0;
+
+                uv[i * 4 + 0] = u;
+                uv[i * 4 + 1] = v;
+                uv[i * 4 + 2] = 0.0;
+                uv[i * 4 + 3] = 1.0;
+            }
+        }
+
+        for(let y = 0; y < ySize; y++){
+            for(let x = 0; x < xSize; x++){
+                let i = (y * xSize + x) * 6;
+                let vi = y * (xSize + 1) + x;
+
+                indices[i + 0] = vi;
+                indices[i + 1] = vi + 1;
+                indices[i + 2] = vi + xSize + 1;
+                indices[i + 3] = vi + xSize + 1;
+                indices[i + 4] = vi + 1;
+                indices[i + 5] = vi + xSize + 2;
+            }
+        }
+
+        return new MeshData(positions, colors, indices, uv);
+    }
+
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
