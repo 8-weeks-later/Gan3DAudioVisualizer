@@ -57,6 +57,58 @@ export default class GeometryGenerator{
         return new MeshData(positions, colors, indices, uv);
     }
 
+    makeGrid(width: number, height: number, numSlices: number, numStacks: number){
+        const dx = width / numSlices;
+        
+        let position: number[] = [];
+        let color: number[] = [];
+        let uv: number[] = [];
+        let indices: number[] = [];
+
+        for(let i = 0; i <= numStacks; i++){
+            const uvY = 1.0 - (i / (numStacks - 1));
+            const scaler = 0.5 - uvY;
+            const stackStartX = -width * 0.5;
+            const stackStartY = height * scaler;
+            const stackStartZ = 0.0;
+            for(let j = 0; j <= numSlices; j++){
+                let posX = j / numSlices;
+
+                position.push(stackStartX + dx * j);
+                position.push(stackStartY);
+                position.push(stackStartZ);
+                position.push(1.0);
+
+                color.push(i / numStacks);
+                color.push(1.0 - i / numStacks);
+                color.push(0.0);
+                color.push(1.0);
+
+                uv.push(posX);
+                uv.push(uvY);
+            }
+        }
+
+        for(let s = 0; s < numStacks; s++){
+            const padding = s * (numSlices + 1);
+            for(let i = padding; i < padding + numSlices; i++){
+                indices.push(i);
+                indices.push(i + 2 + numSlices);
+                indices.push(i + 1 + numSlices);
+                indices.push(i);
+                indices.push(i + 1);
+                indices.push(i + 2 + numSlices);
+            }
+        }
+
+        const positions = new Float32Array(position);
+        const colors = new Float32Array(color);
+        const uvArray = new Float32Array(uv);
+        const indicesArray = new Uint16Array(indices);
+
+        return new MeshData(positions, colors, indicesArray, uvArray);
+    }
+
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
@@ -170,5 +222,27 @@ export default class GeometryGenerator{
         ]);
 
         return new MeshData(positions, colors, indices, uv);
+    }
+
+    makeAudioMesh(data: number[], size: number, chunkSize: number): MeshData{
+        const zSize = Math.ceil(data.length / chunkSize);
+        let grid = this.makeGrid(size, size * 1.618, chunkSize, zSize);
+        let positions = grid.positions;
+        
+        const height = Math.max(...data);
+        const randomColor = Math.min(1.0, Math.random() * 0.5 + 0.5);
+
+        for(let i = 0; i < data.length; i++)
+        {
+            positions[i * 4 + 2] = data[i] / height * size;
+
+            const color = Math.min(1.0, data[i] / height + 0.3);
+            grid.colors[i * 4] = color;
+            grid.colors[i * 4 + 1] = (1 - color) * 0.5 + 0.5;
+            grid.colors[i * 4 + 2] = randomColor;
+            grid.colors[i * 4 + 3] = 1.0;
+        }
+
+        return grid;
     }
 }
