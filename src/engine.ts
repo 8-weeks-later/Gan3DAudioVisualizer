@@ -21,6 +21,7 @@ export default class Engine {
 
         const input = document.querySelector("input");
         input.addEventListener("input", this.analyseAudio);
+        input.addEventListener("input", () => {
 
         const geometryGenerator = new GeometryGenerator;
 
