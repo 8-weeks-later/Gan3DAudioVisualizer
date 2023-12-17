@@ -226,7 +226,7 @@ export default class GeometryGenerator{
 
     makeAudioMesh(data: number[], size: number, chunkSize: number): MeshData{
         const zSize = Math.ceil(data.length / chunkSize);
-        let grid = this.makeGrid(size, size, chunkSize, zSize);
+        let grid = this.makeGrid(size, size * 1.618, chunkSize, zSize);
         let positions = grid.positions;
         
         const height = Math.max(...data);
