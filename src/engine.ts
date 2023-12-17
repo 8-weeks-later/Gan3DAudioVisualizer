@@ -20,11 +20,11 @@ export default class Engine {
         }
 
         const input = document.querySelector("input");
-        input.addEventListener("input", this.analyseAudio);
         input.addEventListener("input", () => {
+            this.analyseAudio();
+        });
 
         const geometryGenerator = new GeometryGenerator;
-
         this.renderer.resizeBackings();
 
         await this.renderer.setMesh(geometryGenerator.makeBox(1), geometryGenerator.makeBox(45));
@@ -49,7 +49,7 @@ export default class Engine {
 
         const data = await this.audioAnalyser.analyse();
 
-        // TODO: remove todo
-        console.log(data);
+        const geometryGenerator = new GeometryGenerator;
+        await this.renderer.setMesh(geometryGenerator.makeAudioMesh(data, 5, 64), geometryGenerator.makeBox(45));
     }
 }

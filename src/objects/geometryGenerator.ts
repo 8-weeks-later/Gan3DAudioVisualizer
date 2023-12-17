@@ -224,4 +224,16 @@ export default class GeometryGenerator{
 
         return new MeshData(positions, colors, indices, uv);
     }
+
+    makeAudioMesh(data: number[], size: number, chunkSize: number): MeshData{
+        const zSize = Math.ceil(data.length / chunkSize);
+        let grid = this.makeGrid(size, size, chunkSize, zSize);
+        let positions = grid.positions;
+        
+        const height = Math.max(...data);
+        for(let i = 0; i < data.length; i++)
+            positions[i * 4 + 2] = data[i] / height * size;
+
+        return grid;
+    }
 }
