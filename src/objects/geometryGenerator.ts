@@ -68,7 +68,6 @@ export default class GeometryGenerator{
         for(let i = 0; i <= numStacks; i++){
             const uvY = 1.0 - (i / (numStacks - 1));
             const scaler = 0.5 - uvY;
-            console.log(uvY);
             const stackStartX = -width * 0.5;
             const stackStartY = height * scaler;
             const stackStartZ = 0.0;
