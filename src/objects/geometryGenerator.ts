@@ -231,8 +231,18 @@ export default class GeometryGenerator{
         let positions = grid.positions;
         
         const height = Math.max(...data);
+        const randomColor = Math.min(1.0, Math.random() * 0.5 + 0.5);
+
         for(let i = 0; i < data.length; i++)
+        {
             positions[i * 4 + 2] = data[i] / height * size;
+
+            const color = Math.min(1.0, data[i] / height + 0.3);
+            grid.colors[i * 4] = color;
+            grid.colors[i * 4 + 1] = (1 - color) * 0.5 + 0.5;
+            grid.colors[i * 4 + 2] = randomColor;
+            grid.colors[i * 4 + 3] = 1.0;
+        }
 
         return grid;
     }
