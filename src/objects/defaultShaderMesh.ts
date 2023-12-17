@@ -9,9 +9,7 @@ import CameraSetting, { canvasSize } from "../setting";
 export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
         super(meshData, device);
-
-        // tmp
-        mat4.rotateX(this.transform, this.transform, 40);
+        mat4.rotateX(this.transform, this.transform, -1.5708);
     }
 
     createShaderModel(){
@@ -143,7 +141,7 @@ export default class DefaultShaderMesh extends Mesh{
         const cameraPosition = vec4.create();
         vec4.set(cameraPosition, 0, 0, 0, 0);
 
-        mat4.rotateY(this.transform, this.transform, 1 * 0.04);
+        mat4.rotateZ(this.transform, this.transform, 1 * 0.04);
 
         cameraArray.set(projectionMatrix, 0);
         cameraArray.set(viewMatrix, 16);
