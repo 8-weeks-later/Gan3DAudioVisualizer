@@ -57,50 +57,57 @@ export default class GeometryGenerator{
         return new MeshData(positions, colors, indices, uv);
     }
 
-    makePlane(scale: number, xSize: number, ySize: number): MeshData{
-        let positions = new Float32Array((xSize + 1) * (ySize + 1) * 4);
-        let colors = new Float32Array((xSize + 1) * (ySize + 1) * 4);
-        let indices = new Uint16Array(xSize * ySize * 6);
-        let uv = new Float32Array((xSize + 1) * (ySize + 1) * 4);
+    makeGrid(width: number, height: number, numSlices: number, numStacks: number){
+        const dx = width / numSlices;
+        
+        let position: number[] = [];
+        let color: number[] = [];
+        let uv: number[] = [];
+        let indices: number[] = [];
 
-        for(let y = 0; y <= ySize; y++){
-            for(let x = 0; x <= xSize; x++){
-                let i = y * (xSize + 1) + x;
-                let u = x / xSize;
-                let v = y / ySize;
+        for(let i = 0; i <= numStacks; i++){
+            const uvY = 1.0 - (i / (numStacks - 1));
+            const scaler = 0.5 - uvY;
+            console.log(uvY);
+            const stackStartX = -width * 0.5;
+            const stackStartY = height * scaler;
+            const stackStartZ = 0.0;
+            for(let j = 0; j <= numSlices; j++){
+                let posX = j / numSlices;
 
-                positions[i * 4 + 0] = scale * u;
-                positions[i * 4 + 1] = scale * v;
-                positions[i * 4 + 2] = 0.0;
-                positions[i * 4 + 3] = 1.0;
+                position.push(stackStartX + dx * j);
+                position.push(stackStartY);
+                position.push(stackStartZ);
+                position.push(1.0);
 
-                colors[i * 4 + 0] = x / xSize;
-                colors[i * 4 + 1] = y / ySize;
-                colors[i * 4 + 2] = 0.0;
-                colors[i * 4 + 3] = 1.0;
+                color.push(i / numStacks);
+                color.push(1.0 - i / numStacks);
+                color.push(0.0);
+                color.push(1.0);
 
-                uv[i * 4 + 0] = u;
-                uv[i * 4 + 1] = v;
-                uv[i * 4 + 2] = 0.0;
-                uv[i * 4 + 3] = 1.0;
+                uv.push(posX);
+                uv.push(uvY);
             }
         }
 
-        for(let y = 0; y < ySize; y++){
-            for(let x = 0; x < xSize; x++){
-                let i = (y * xSize + x) * 6;
-                let vi = y * (xSize + 1) + x;
-
-                indices[i + 0] = vi;
-                indices[i + 1] = vi + 1;
-                indices[i + 2] = vi + xSize + 1;
-                indices[i + 3] = vi + xSize + 1;
-                indices[i + 4] = vi + 1;
-                indices[i + 5] = vi + xSize + 2;
+        for(let s = 0; s < numStacks; s++){
+            const padding = s * (numSlices + 1);
+            for(let i = padding; i < padding + numSlices; i++){
+                indices.push(i);
+                indices.push(i + 2 + numSlices);
+                indices.push(i + 1 + numSlices);
+                indices.push(i);
+                indices.push(i + 1);
+                indices.push(i + 2 + numSlices);
             }
         }
 
-        return new MeshData(positions, colors, indices, uv);
+        const positions = new Float32Array(position);
+        const colors = new Float32Array(color);
+        const uvArray = new Float32Array(uv);
+        const indicesArray = new Uint16Array(indices);
+
+        return new MeshData(positions, colors, indicesArray, uvArray);
     }
 
     makeBox(scale: number): MeshData{
