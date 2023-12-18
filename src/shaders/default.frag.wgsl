@@ -16,7 +16,7 @@ struct Material{
 };
 
 @group(0) @binding(2) var<uniform> eyePos: vec4f;
-@group(0) @binding(3) var<uniform> light: Light;
+@group(0) @binding(3) var<uniform> light: array<Light, 3>;
 @group(0) @binding(4) var<uniform> material: Material;
 
 fn BlinnPhong(inLight: Light, inMaterial: Material, inNormal: vec3f, inViewDir: vec3f) -> vec3f {
@@ -40,6 +40,10 @@ fn main(@location(0) inColor: vec3f,
         @location(1) inNornal: vec3f,
         @location(2) inPos: vec3f) -> @location(0) vec4f {
     var viewDir = normalize(vec3(eyePos.xyz) - inPos);
-    var outColor = computeLighting(light, material, inNornal, viewDir);
+
+    var outColor = computeLighting(light[0], material, inNornal, viewDir);
+    outColor += computeLighting(light[1], material, inNornal, viewDir);
+    outColor += computeLighting(light[2], material, inNornal, viewDir);
+    
     return vec4f(inColor * outColor, 1);
 }

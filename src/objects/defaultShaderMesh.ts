@@ -152,7 +152,7 @@ export default class DefaultShaderMesh extends Mesh{
         });
 
         const lightBuffer = this.device.createBuffer({
-            size: 32, // Room for two vec4
+            size: 96, // Room for two vec4 * 3
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
         });
 
@@ -202,20 +202,52 @@ export default class DefaultShaderMesh extends Mesh{
         eyePositionArray.set(cameraPosition, 0);
         this.device.queue.writeBuffer(eyePositionBuffer, 0, eyePositionArray);
 
-        const lightArray = new Float32Array(8);
-        const lightDirection = vec3.create();
-        vec3.set(lightDirection, 0.3, 0.3, -1.0);
-        lightArray.set(lightDirection, 0);
-        
-        lightArray.set([0], 3);
-
-        const lightColor = vec3.create();
-        vec3.set(lightColor, 1, 1, 1);
-        lightArray.set(lightColor, 4);
-
-        const lightIntensity = 2;
-        lightArray.set([lightIntensity], 7);
-        this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+        const lightArray = new Float32Array(24);
+        {
+            const lightDirection = vec3.create();
+            vec3.set(lightDirection, 0.3, 0.3, -1.0);
+            lightArray.set(lightDirection, 0);
+            
+            lightArray.set([0], 3);
+    
+            const lightColor = vec3.create();
+            vec3.set(lightColor, 1, 1, 1);
+            lightArray.set(lightColor, 4);
+    
+            const lightIntensity = 2;
+            lightArray.set([lightIntensity], 7);
+            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+        }
+        {
+            const lightDirection = vec3.create();
+            vec3.set(lightDirection, 0.3, -1, 0.2);
+            lightArray.set(lightDirection, 8);
+            
+            lightArray.set([0], 11);
+    
+            const lightColor = vec3.create();
+            vec3.set(lightColor, 1, 1, 1);
+            lightArray.set(lightColor, 12);
+    
+            const lightIntensity = 2;
+            lightArray.set([lightIntensity], 15);
+            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+        }
+        {
+            const lightDirection = vec3.create();
+            vec3.set(lightDirection, 1.0, 0.3, -0.5);
+            lightArray.set(lightDirection, 16);
+            
+            lightArray.set([0], 19);
+    
+            const lightColor = vec3.create();
+            vec3.set(lightColor, 1, 1, 1);
+            lightArray.set(lightColor, 20);
+    
+            const lightIntensity = 2;
+            lightArray.set([lightIntensity], 23);
+            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+        }
 
         const materialArray = new Float32Array(12);
         const ambient = vec3.create();
