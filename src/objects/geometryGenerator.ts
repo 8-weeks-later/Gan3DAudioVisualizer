@@ -1,3 +1,4 @@
+import { vec3 } from "gl-matrix";
 import MeshData from "./meshData";
 
 const PI = 3.1415926535897932384626433832795;
@@ -27,7 +28,12 @@ export default class GeometryGenerator{
             1, 0,
             0.5, 1,
         ]);
-        return new MeshData(positions, colors, indices, uv);
+        let normals = new Float32Array([
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+        ]);
+        return new MeshData(positions, colors, indices, uv, normals);
     };
 
     makeSquare(scale: number): MeshData{
@@ -53,8 +59,14 @@ export default class GeometryGenerator{
             1, 1,
             0, 1,
         ]);
+        let normals = new Float32Array([
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0 ,1,
+        ]);
 
-        return new MeshData(positions, colors, indices, uv);
+        return new MeshData(positions, colors, indices, uv, normals);
     }
 
     makeGrid(width: number, height: number, numSlices: number, numStacks: number){
@@ -64,6 +76,7 @@ export default class GeometryGenerator{
         let color: number[] = [];
         let uv: number[] = [];
         let indices: number[] = [];
+        let normals: number[] = [];
 
         for(let i = 0; i <= numStacks; i++){
             const uvY = 1.0 - (i / (numStacks - 1));
@@ -86,6 +99,10 @@ export default class GeometryGenerator{
 
                 uv.push(posX);
                 uv.push(uvY);
+
+                normals.push(0.0);
+                normals.push(0.0);
+                normals.push(1.0);
             }
         }
 
@@ -105,8 +122,9 @@ export default class GeometryGenerator{
         const colors = new Float32Array(color);
         const uvArray = new Float32Array(uv);
         const indicesArray = new Uint16Array(indices);
+        const normalsArray = new Float32Array(normals);
 
-        return new MeshData(positions, colors, indicesArray, uvArray);
+        return new MeshData(positions, colors, indicesArray, uvArray, normalsArray);
     }
 
     makeBox(scale: number): MeshData{
@@ -220,8 +238,45 @@ export default class GeometryGenerator{
             1, 1,
             0, 1,
         ]);
+        let normals = new Float32Array([
+            // top
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
 
-        return new MeshData(positions, colors, indices, uv);
+            // bottom
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+
+            // front
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+
+            // back
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+
+            // left
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+
+            // right
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0 ,0,
+        ]);
+
+        return new MeshData(positions, colors, indices, uv, normals);
     }
 
     makeAudioMesh(data: number[], size: number, chunkSize: number): MeshData{
@@ -241,6 +296,29 @@ export default class GeometryGenerator{
             grid.colors[i * 4 + 1] = (1 - color) * 0.5 + 0.5;
             grid.colors[i * 4 + 2] = randomColor;
             grid.colors[i * 4 + 3] = 1.0;
+
+            if (i != 0 && i % chunkSize == 0) continue;
+            if (i > data.length - 1) continue;
+            const base = i * 3;
+            const pos: vec3 = [positions[base], positions[base + 1], positions[base + 2]];
+            const prevPos: vec3 = [positions[base - 3], positions[base - 2], positions[base - 1]];
+            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + chunkSize], positions[base + chunkSize]];
+
+            const prevDir = vec3.create();
+            vec3.subtract(prevDir, pos, prevPos);
+            vec3.normalize(prevDir, prevDir);
+
+            const nextDir = vec3.create();
+            vec3.subtract(nextDir, nextChunkPos, pos);
+            vec3.normalize(nextDir, nextDir);
+
+            const normal = vec3.create();
+            vec3.add(normal, prevDir, nextDir);
+            vec3.normalize(normal, normal);
+
+            grid.normals[base] = normal[0];
+            grid.normals[base + 1] = normal[1];
+            grid.normals[base + 2] = normal[2];
         }
 
         return grid;

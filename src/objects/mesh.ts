@@ -6,6 +6,7 @@ export default class Mesh{
     colorBuffer: GPUBuffer;
     indexBuffer: GPUBuffer;
     uvBuffer: GPUBuffer;
+    normalBuffer: GPUBuffer;
     numOfIndex: number;
     
     device: GPUDevice;
@@ -45,6 +46,7 @@ export default class Mesh{
         this.colorBuffer = createBuffer(meshData.colors, GPUBufferUsage.VERTEX);
         this.indexBuffer = createBuffer(meshData.indices, GPUBufferUsage.INDEX);
         this.uvBuffer = createBuffer(meshData.uv, GPUBufferUsage.VERTEX);
+        this.normalBuffer = createBuffer(meshData.normals, GPUBufferUsage.VERTEX);
         this.numOfIndex = meshData.indices.length;
 
         this.createPipeline();
