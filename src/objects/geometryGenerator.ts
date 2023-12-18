@@ -1,3 +1,4 @@
+import { vec3 } from "gl-matrix";
 import MeshData from "./meshData";
 
 const PI = 3.1415926535897932384626433832795;
@@ -296,10 +297,28 @@ export default class GeometryGenerator{
             grid.colors[i * 4 + 2] = randomColor;
             grid.colors[i * 4 + 3] = 1.0;
 
-            // TODO: fix this
-            grid.normals[i * 3] = 0.0;
-            grid.normals[i * 3 + 1] = 0.0;
-            grid.normals[i * 3 + 2] = 1.0;
+            if (i != 0 && i % chunkSize == 0) continue;
+            if (i > data.length - 1) continue;
+            const base = i * 3;
+            const pos: vec3 = [positions[base], positions[base + 1], positions[base + 2]];
+            const prevPos: vec3 = [positions[base - 3], positions[base - 2], positions[base - 1]];
+            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + chunkSize], positions[base + chunkSize]];
+
+            const prevDir = vec3.create();
+            vec3.subtract(prevDir, pos, prevPos);
+            vec3.normalize(prevDir, prevDir);
+
+            const nextDir = vec3.create();
+            vec3.subtract(nextDir, nextChunkPos, pos);
+            vec3.normalize(nextDir, nextDir);
+
+            const normal = vec3.create();
+            vec3.add(normal, prevDir, nextDir);
+            vec3.normalize(normal, normal);
+
+            grid.normals[base] = normal[0];
+            grid.normals[base + 1] = normal[1];
+            grid.normals[base + 2] = normal[2];
         }
 
         return grid;
