@@ -16,12 +16,12 @@ export default class CubemapShaderMesh extends Mesh{
     async loadCubeMap(){
         // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
         const imgSrcs = [
-            '../assets/img/cubemap/posx.jpg',
-            '../assets/img/cubemap/negx.jpg',
-            '../assets/img/cubemap/posy.jpg',
-            '../assets/img/cubemap/negy.jpg',
-            '../assets/img/cubemap/posz.jpg',
-            '../assets/img/cubemap/negz.jpg',
+            '../assets/img/cubemap/spaceblue/posx.png',
+            '../assets/img/cubemap/spaceblue/negx.png',
+            '../assets/img/cubemap/spaceblue/posy.png',
+            '../assets/img/cubemap/spaceblue/negy.png',
+            '../assets/img/cubemap/spaceblue/posz.png',
+            '../assets/img/cubemap/spaceblue/negz.png',
         ];
         const promises = imgSrcs.map(async (src) => {
           const response = await fetch(src);
