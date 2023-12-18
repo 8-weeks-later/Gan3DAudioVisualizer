@@ -4,6 +4,10 @@
 
 WebGPU를 활용하여 음성을 3D모델로 변환하는 렌더링하는 프로젝트
 
+## Resources
+
+[space-skyboxes](https://opengameart.org/content/space-skyboxes-0)<br>
+
 ## 도움!
 
 [AdorableCSS](https://developer-1px.github.io/adorable-css/)
