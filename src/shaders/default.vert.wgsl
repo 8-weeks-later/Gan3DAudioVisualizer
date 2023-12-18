@@ -11,6 +11,7 @@ struct VSOut {
     @builtin(position) Position: vec4f,
     @location(0) color: vec3f,
     @location(1) normal: vec3f,
+    @location(2) pos: vec3f
  };
 
 @vertex
@@ -22,5 +23,6 @@ fn main(@location(0) inPos: vec3f,
     vsOut.Position = camera.projection * camera.view * model * vec4f(inPos, 1);
     vsOut.color = inColor;
     vsOut.normal = normal;
+    vsOut.pos = inPos;
     return vsOut;
 }

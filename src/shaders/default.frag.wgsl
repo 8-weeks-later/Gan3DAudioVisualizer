@@ -1,15 +1,23 @@
+// 16 bytes의 배수로 맞추기 위한 dummy 변수 선언
 struct Light{
     direction: vec3f,
+    dummy1: f32,
     color: vec3f,
     intensity: f32,
 };
 
 struct Material{
     ambient: vec3f,
+    dummy1: f32,
     diffuse: vec3f,
+    dummy2: f32,
     specular: vec3f,
     shininess: f32,
 };
+
+@group(0) @binding(2) var<uniform> eyePos: vec4f;
+@group(0) @binding(3) var<uniform> light: Light;
+@group(0) @binding(4) var<uniform> material: Material;
 
 fn BlinnPhong(inLight: Light, inMaterial: Material, inNormal: vec3f, inViewDir: vec3f) -> vec3f {
     var ambient = inLight.color * inMaterial.ambient;
@@ -29,11 +37,9 @@ fn computeLighting(inLight: Light, inMaterial: Material, inNormal: vec3f, inView
 
 @fragment
 fn main(@location(0) inColor: vec3f,
-        @location(1) inNornal: vec3f) -> @location(0) vec4f {
-    var light = Light(vec3f(0.3, 0.3, 0.3), vec3f(1, 1, 1), 2);
-    var material = Material(vec3f(0.1, 0.1, 0.1), vec3f(0.5, 0.5, 0.5), vec3f(1, 1, 1), 32);
-    var viewDir = vec3f(0, 0, 1);
-    
+        @location(1) inNornal: vec3f,
+        @location(2) inPos: vec3f) -> @location(0) vec4f {
+    var viewDir = normalize(vec3(eyePos.xyz) - inPos);
     var outColor = computeLighting(light, material, inNornal, viewDir);
     return vec4f(inColor * outColor, 1);
 }

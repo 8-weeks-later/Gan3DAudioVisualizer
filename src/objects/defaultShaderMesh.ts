@@ -1,6 +1,6 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
-import { mat4, vec4 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
 import fsCode from '../shaders/default.frag.wgsl';
@@ -39,6 +39,7 @@ export default class DefaultShaderMesh extends Mesh{
             offset: 0,
             format: 'float32x3'
         };
+
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
@@ -70,13 +71,25 @@ export default class DefaultShaderMesh extends Mesh{
         // 🦄 Uniform Data
         const bindGroupLayout = this.device.createBindGroupLayout({
             entries: [{
-              binding: 0, // camera uniforms
-              visibility: GPUShaderStage.VERTEX,
-              buffer: {},
+                binding: 0, // camera uniforms
+                visibility: GPUShaderStage.VERTEX,
+                buffer: {},
             }, {
-              binding: 1, // model uniform
-              visibility: GPUShaderStage.VERTEX,
-              buffer: {},
+                binding: 1, // model uniform
+                visibility: GPUShaderStage.VERTEX,
+                buffer: {},
+            },{
+                binding: 2, // eye position
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: {},
+            },{
+                binding: 3, // light
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: {},
+            },{
+                binding: 4, // material
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: {},
             }]
         });
 
@@ -131,7 +144,22 @@ export default class DefaultShaderMesh extends Mesh{
             size: 64, // Room for one 4x4 matrix
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
         });
-        
+
+        const eyePositionBuffer = this.device.createBuffer({
+            size: 16, // Room for one vec4
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+
+        const lightBuffer = this.device.createBuffer({
+            size: 32, // Room for two vec4
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+
+        const materialBuffer = this.device.createBuffer({
+            size: 64, // Room for three vec4
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM
+        });
+
         const bindGroup = this.device.createBindGroup({
             layout: this.pipeline.getBindGroupLayout(0),
             entries: [{
@@ -140,6 +168,15 @@ export default class DefaultShaderMesh extends Mesh{
             }, {
                 binding: 1,
                 resource: { buffer: modelBuffer },
+            }, {
+                binding: 2,
+                resource: { buffer: eyePositionBuffer },
+            }, {
+                binding: 3,
+                resource: { buffer: lightBuffer },
+            }, {
+                binding: 4,
+                resource: { buffer: materialBuffer },
             }],
             });
         
@@ -149,7 +186,7 @@ export default class DefaultShaderMesh extends Mesh{
         const viewMatrix = mat4.create();
         mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
         const cameraPosition = vec4.create();
-        vec4.set(cameraPosition, 0, 0, 0, 0);
+        vec4.set(cameraPosition, 0, 0, -10, 0);
 
         mat4.rotateZ(this.transform, this.transform, 1 * 0.04);
 
@@ -157,11 +194,48 @@ export default class DefaultShaderMesh extends Mesh{
         cameraArray.set(viewMatrix, 16);
         cameraArray.set(cameraPosition, 32);
 
-        // Update the camera uniform buffer
         this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
-
-        // Update the model uniform buffer
         this.device.queue.writeBuffer(modelBuffer, 0, this.transform as Float32Array);
+
+        const eyePositionArray = new Float32Array(4);
+        eyePositionArray.set(cameraPosition, 0);
+        this.device.queue.writeBuffer(eyePositionBuffer, 0, eyePositionArray);
+
+        const lightArray = new Float32Array(8);
+        const lightDirection = vec3.create();
+        vec3.set(lightDirection, 0.3, 0.3, 0.3);
+        lightArray.set(lightDirection, 0);
+        
+        lightArray.set([0], 3);
+
+        const lightColor = vec3.create();
+        vec3.set(lightColor, 1, 1, 1);
+        lightArray.set(lightColor, 4);
+
+        const lightIntensity = 2;
+        lightArray.set([lightIntensity], 7);
+        this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+
+        const materialArray = new Float32Array(12);
+        const ambient = vec3.create();
+        vec3.set(ambient, 0.1, 0.1, 0.1);
+        materialArray.set(ambient, 0);
+
+        lightArray.set([0], 3);
+
+        const diffuse = vec3.create();
+        vec3.set(diffuse, 0.5, 0.5, 0.5);
+        materialArray.set(diffuse, 4);
+        
+        lightArray.set([0], 7);
+
+        const specular = vec3.create();
+        vec3.set(specular, 1, 1, 1);
+        materialArray.set(specular, 8);
+        
+        const shininess = 32;
+        materialArray.set([shininess], 11);
+        this.device.queue.writeBuffer(materialBuffer, 0, materialArray);
         
         passEncoder.setPipeline(this.pipeline);
         passEncoder.setBindGroup(0, bindGroup);
