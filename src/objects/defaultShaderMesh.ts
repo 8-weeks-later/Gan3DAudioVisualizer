@@ -10,6 +10,7 @@ export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
         super(meshData, device);
         mat4.rotateX(this.transform, this.transform, -1.5708);
+        mat4.translate(this.transform, this.transform, [0, 0, -2]);
     }
 
     createShaderModel(){
