@@ -22,7 +22,7 @@ fn main(@location(0) inPos: vec3f,
     var vsOut: VSOut;
     vsOut.Position = camera.projection * camera.view * model * vec4f(inPos, 1);
     vsOut.color = inColor;
-    vsOut.normal = normal;
+    vsOut.normal = (model * vec4f(normal, 0)).xyz;
     vsOut.pos = inPos;
     return vsOut;
 }
