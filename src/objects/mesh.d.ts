@@ -6,6 +6,7 @@ export default class Mesh{
     colorBuffer: GPUBuffer;
     indexBuffer: GPUBuffer;
     uvBuffer: GPUBuffer;
+    normalBuffer: GPUBuffer;
     numOfIndex: number;
     
     device: GPUDevice;

@@ -34,6 +34,11 @@ export default class DefaultShaderMesh extends Mesh{
             offset: 0,
             format: 'float32x2'
         };
+        const normalAttribDesc: GPUVertexAttribute = {
+            shaderLocation: 3, // [[location(3)]]
+            offset: 0,
+            format: 'float32x3'
+        };
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
             arrayStride: 4 * 4, // sizeof(float) * 4
@@ -47,6 +52,11 @@ export default class DefaultShaderMesh extends Mesh{
         const uvBufferDesc: GPUVertexBufferLayout = {
             attributes: [uvAttribDesc],
             arrayStride: 4 * 2, // sizeof(float) * 2
+            stepMode: 'vertex'
+        };
+        const normalBufferDesc: GPUVertexBufferLayout = {
+            attributes: [normalAttribDesc],
+            arrayStride: 4 * 3, // sizeof(float) * 3
             stepMode: 'vertex'
         };
 
@@ -79,7 +89,7 @@ export default class DefaultShaderMesh extends Mesh{
         const vertex: GPUVertexState = {
             module: this.vertModule,
             entryPoint: 'main',
-            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc]
+            buffers: [positionBufferDesc, colorBufferDesc, uvBufferDesc, normalBufferDesc]
         };
 
         // 🌀 Color/Blend State
@@ -159,6 +169,7 @@ export default class DefaultShaderMesh extends Mesh{
         passEncoder.setVertexBuffer(0, this.positionBuffer);
         passEncoder.setVertexBuffer(1, this.colorBuffer);
         passEncoder.setVertexBuffer(2, this.uvBuffer);
+        passEncoder.setVertexBuffer(3, this.normalBuffer);
         passEncoder.setIndexBuffer(this.indexBuffer, 'uint16');
         passEncoder.drawIndexed(this.numOfIndex);
     }
