@@ -203,7 +203,7 @@ export default class DefaultShaderMesh extends Mesh{
 
         const lightArray = new Float32Array(8);
         const lightDirection = vec3.create();
-        vec3.set(lightDirection, 0.3, 0.3, 0.3);
+        vec3.set(lightDirection, 0.3, 0.3, -1.0);
         lightArray.set(lightDirection, 0);
         
         lightArray.set([0], 3);
