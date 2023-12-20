@@ -18,7 +18,6 @@ export default class AudioFileAnalyser {
     }
 
     // https://meyda.js.org/audio-features#amplitudespectrum
-    // TODO: 문서 정리
     // TODO: amplitudeSpectrum과 powerSpectrum의 비교
     async analyse(): Promise<number[]>{
         const array = [];
