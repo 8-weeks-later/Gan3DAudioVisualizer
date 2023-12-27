@@ -13,18 +13,39 @@ export default class CubeMapManager{
     //#endregion Singleton
 
     private cubeMapTexture: GPUTexture;
+    private selectedImageIndex: number = 0;
 
-    public async loadCubeMap(device: GPUDevice): Promise<void>{
-        // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
-        const imgSources = [
+    // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
+    private imageSources: string[][] = [
+        [
+            '../assets/img/cubemap/base/posx.jpg',
+            '../assets/img/cubemap/base/negx.jpg',
+            '../assets/img/cubemap/base/posy.jpg',
+            '../assets/img/cubemap/base/negy.jpg',
+            '../assets/img/cubemap/base/posz.jpg',
+            '../assets/img/cubemap/base/negz.jpg',
+        ],
+        [
             '../assets/img/cubemap/spaceblue/posx.png',
             '../assets/img/cubemap/spaceblue/negx.png',
             '../assets/img/cubemap/spaceblue/posy.png',
             '../assets/img/cubemap/spaceblue/negy.png',
             '../assets/img/cubemap/spaceblue/posz.png',
             '../assets/img/cubemap/spaceblue/negz.png',
-        ];
-        const promises = imgSources.map(async (src) => {
+        ]
+    ]
+
+    public changeCubeMap(index: number, device: GPUDevice): void{
+        index = index < 0 ? this.imageSources.length + index : index;
+        index = index % this.imageSources.length;
+        this.selectedImageIndex = index;
+        this.loadCubeMap(device).then(() => {
+            console.log("CubeMap Changed");
+        });
+    }
+
+    public async loadCubeMap(device: GPUDevice): Promise<void>{
+        const promises = this.imageSources[this.selectedImageIndex].map(async (src) => {
             const response = await fetch(src);
             return createImageBitmap(await response.blob());
         });

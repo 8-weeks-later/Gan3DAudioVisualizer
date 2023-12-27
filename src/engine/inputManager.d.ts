@@ -6,6 +6,7 @@ export default class InputManager {
     public static getInstance();
 
     private isOnDrag: boolean;
+    private device: GPUDevice;
 
     public init(canvas: HTMLCanvasElement): void;
     public onMouseMove(mouseEvent: MouseEvent): void;
@@ -14,4 +15,6 @@ export default class InputManager {
     public onKeyDown(keyboardEvent: KeyboardEvent): void;
     public onKeyUp(keyboardEvent: KeyboardEvent): void;
     public onWheel(wheelEvent: WheelEvent): void;
+
+    private processNumberKey(keyboardEvent: KeyboardEvent): void;
 }

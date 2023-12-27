@@ -36,7 +36,7 @@ export default class Engine {
         await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
         this.renderer.render();
 
-        InputManager.getInstance().init(this.canvas);
+        InputManager.getInstance().init(this.canvas, this.renderer.device);
     }
 
     initCanvas(canvas: HTMLCanvasElement){
