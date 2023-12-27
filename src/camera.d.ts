@@ -12,6 +12,7 @@ export default class Camera {
     private rotation: vec3;
 
     public initialize(): void;
+    public getPosition(): vec3;
     public getProjectionMatrix(): mat4;
     public getViewMatrix(): mat4;
     public updateProjectionMatrix(): void;

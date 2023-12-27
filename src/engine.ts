@@ -1,6 +1,7 @@
 import { canvasSize } from "./setting";
 import GeometryGenerator from "./objects/geometryGenerator";
 import Renderer from "./renderer";
+import Camera from "./camera";
 import AudioAnalyser from "./audioAnalyser/audioAnalyser";
 
 export default class Engine {
@@ -27,6 +28,9 @@ export default class Engine {
         });
 
         this.renderer.resizeBackings();
+
+        Camera.getInstance().initialize();
+        Camera.getInstance().setPosition([0, 0, -10]);
 
         await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
         this.renderer.render();

@@ -6,8 +6,6 @@ export default class Camera{
     private static instance: Camera;
 
     private constructor() { 
-        vec3.set(this.position, 0, 0, -10);
-        this.initialize();
     }
 
     public static getInstance() {
@@ -24,6 +22,10 @@ export default class Camera{
     public initialize(): void {
         this.updateProjectionMatrix();
         this.updateViewMatrix();
+    }
+
+    public getPosition(): vec3 {
+        return this.position;
     }
 
     public getProjectionMatrix(): mat4 {

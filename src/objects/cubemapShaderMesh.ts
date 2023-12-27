@@ -5,6 +5,7 @@ import { mat4, vec4 } from 'gl-matrix';
 import vsCode from '../shaders/cubemap.vert.wgsl';
 import fsCode from '../shaders/cubemap.frag.wgsl';
 import CameraSetting, { canvasSize } from "../setting";
+import Camera from '../camera';
 
 export default class CubemapShaderMesh extends Mesh{
     cubemapTexture: GPUTexture;
@@ -172,18 +173,13 @@ export default class CubemapShaderMesh extends Mesh{
                 }),
             }],
             });
-        
-        const cameraArray = new Float32Array(36);
-        const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, CameraSetting.fovRadian, canvasSize / canvasSize, CameraSetting.near, CameraSetting.far);
-        const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
-        const cameraPosition = vec4.create();
-        vec4.set(cameraPosition, 0, 0, 0, 0);
 
-        cameraArray.set(projectionMatrix, 0);
-        cameraArray.set(viewMatrix, 16);
-        cameraArray.set(cameraPosition, 32);
+        const cameraInstance = Camera.getInstance();
+        const cameraArray = new Float32Array(36);
+
+        cameraArray.set(cameraInstance.getProjectionMatrix(), 0);
+        cameraArray.set(cameraInstance.getViewMatrix(), 16);
+        cameraArray.set(cameraInstance.getPosition(), 32);
 
         // Update the camera uniform buffer
         this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
