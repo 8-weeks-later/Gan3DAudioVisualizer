@@ -5,7 +5,7 @@ import { mat4, vec4 } from 'gl-matrix';
 import vsCode from '../shaders/cubemap.vert.wgsl';
 import fsCode from '../shaders/cubemap.frag.wgsl';
 import CameraSetting, { canvasSize } from "../setting";
-import Camera from '../camera';
+import Camera from '../engine/camera';
 
 export default class CubemapShaderMesh extends Mesh{
     cubemapTexture: GPUTexture;

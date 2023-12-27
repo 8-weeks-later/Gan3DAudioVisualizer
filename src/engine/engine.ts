@@ -1,8 +1,8 @@
-import { canvasSize } from "./setting";
-import GeometryGenerator from "./objects/geometryGenerator";
+import { canvasSize } from "../setting";
+import GeometryGenerator from "../objects/geometryGenerator";
 import Renderer from "./renderer";
 import Camera from "./camera";
-import AudioAnalyser from "./audioAnalyser/audioAnalyser";
+import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 
 export default class Engine {
     canvas: HTMLCanvasElement;

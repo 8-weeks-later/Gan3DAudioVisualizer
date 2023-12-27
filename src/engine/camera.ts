@@ -1,5 +1,5 @@
 import { glMatrix, mat4, vec3 } from 'gl-matrix';
-import CameraSetting, { canvasSize } from "./setting";
+import CameraSetting, { canvasSize } from "../setting";
 
 export default class Camera{
     //#region Singleton

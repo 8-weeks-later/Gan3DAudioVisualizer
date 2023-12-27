@@ -1,6 +1,6 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
-import Camera from "../camera";
+import Camera from "../engine/camera";
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
