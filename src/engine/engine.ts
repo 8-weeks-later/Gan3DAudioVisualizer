@@ -3,6 +3,7 @@ import GeometryGenerator from "../objects/geometryGenerator";
 import Renderer from "./renderer";
 import Camera from "./camera";
 import AudioAnalyser from "../audioAnalyser/audioAnalyser";
+import InputManager from './inputManager';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -35,14 +36,7 @@ export default class Engine {
         await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
         this.renderer.render();
 
-        // TODO: InputManager에서 로직 처리
-        this.canvas.addEventListener("wheel", (e) => {
-            Camera.getInstance().moveForward(e.deltaY / 100);
-        });
-
-        this.canvas.addEventListener("mousemove", (e) => {
-            Camera.getInstance().rotateXY(e.movementY / 100, e.movementX / 100);
-        });
+        InputManager.getInstance().init(this.canvas);
     }
 
     initCanvas(canvas: HTMLCanvasElement){
