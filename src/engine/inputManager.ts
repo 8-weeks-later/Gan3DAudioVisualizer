@@ -41,6 +41,9 @@ export default class InputManager {
     }
 
     public onKeyDown(keyboardEvent: KeyboardEvent): void {
+        if (keyboardEvent.key === "`") {
+            Camera.getInstance().initialize();
+        }
     }
 
     public onKeyUp(keyboardEvent: KeyboardEvent): void {
