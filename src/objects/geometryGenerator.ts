@@ -9,11 +9,13 @@ const SQRT3 = 1.73205080756887729352;
 const SQRT6 = 2.44948974278317809820;
 
 export default class GeometryGenerator{
+    private objLoader: ObjLoader = new ObjLoader();
+
     makeTriangle(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0, 1,
-            scale, -scale, 0.0, 1,
-            0.0, scale, 0.0, 1,
+            -scale, -scale, 0.0,
+            scale, -scale, 0.0,
+            0.0, scale, 0.0,
         ]);
         let colors = new Float32Array([
             1.0, 0.0, 0.0, 1.0,
@@ -38,10 +40,10 @@ export default class GeometryGenerator{
 
     makeSquare(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0, 1,
-            scale, -scale, 0.0, 1,
-            scale, scale, 0.0, 1,
-            -scale, scale, 0.0, 1,
+            -scale, -scale, 0.0,
+            scale, -scale, 0.0,
+            scale, scale, 0.0,
+            -scale, scale, 0.0,
         ]);
         let colors = new Float32Array([
             1.0, 1.0, 1.0, 1.0,
@@ -90,7 +92,6 @@ export default class GeometryGenerator{
                 position.push(stackStartX + dx * j);
                 position.push(stackStartY);
                 position.push(stackStartZ);
-                position.push(1.0);
 
                 color.push(i / numStacks);
                 color.push(1.0 - i / numStacks);
@@ -130,35 +131,35 @@ export default class GeometryGenerator{
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
-            -scale, scale, -scale, 1,
-            -scale, scale, scale, 1,
-            scale, scale, scale, 1,
-            scale, scale, -scale, 1,
+            -scale, scale, -scale,
+            -scale, scale, scale,
+            scale, scale, scale,
+            scale, scale, -scale,
             // bottom
-            -scale, -scale, -scale, 1,
-            scale, -scale, -scale, 1,
-            scale, -scale, scale, 1,
-            -scale, -scale, scale, 1,
+            -scale, -scale, -scale,
+            scale, -scale, -scale,
+            scale, -scale, scale,
+            -scale, -scale, scale,
             // front
-            -scale, -scale, -scale, 1,
-            -scale, scale, -scale, 1,
-            scale, scale, -scale, 1,
-            scale, -scale, -scale, 1,
+            -scale, -scale, -scale,
+            -scale, scale, -scale,
+            scale, scale, -scale,
+            scale, -scale, -scale,
             // back
-            -scale, -scale, scale, 1,
-            scale, -scale, scale, 1,
-            scale, scale, scale, 1,
-            -scale, scale, scale, 1,
+            -scale, -scale, scale,
+            scale, -scale, scale,
+            scale, scale, scale,
+            -scale, scale, scale,
             // left
-            -scale, -scale, scale, 1,
-            -scale, scale, scale, 1,
-            -scale, scale, -scale, 1,
-            -scale, -scale, -scale, 1,
+            -scale, -scale, scale,
+            -scale, scale, scale,
+            -scale, scale, -scale,
+            -scale, -scale, -scale,
             // right
-            scale, -scale, scale, 1,
-            scale, -scale, -scale, 1,
-            scale, scale, -scale, 1,
-            scale, scale, scale, 1,
+            scale, -scale, scale,
+            scale, -scale, -scale,
+            scale, scale, -scale,
+            scale, scale, scale,
         ]);
         let colors = new Float32Array([
             // top - red
@@ -289,7 +290,7 @@ export default class GeometryGenerator{
 
         for(let i = 0; i < data.length; i++)
         {
-            positions[i * 4 + 2] = data[i] / height * size;
+            positions[i * 3 + 2] = data[i] / height * size;
 
             const color = Math.min(1.0, data[i] / height + 0.3);
             grid.colors[i * 4] = color;
@@ -302,7 +303,7 @@ export default class GeometryGenerator{
             const base = i * 3;
             const pos: vec3 = [positions[base], positions[base + 1], positions[base + 2]];
             const prevPos: vec3 = [positions[base - 3], positions[base - 2], positions[base - 1]];
-            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + chunkSize], positions[base + chunkSize]];
+            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + 1 + chunkSize], positions[base + 2 + chunkSize]];
 
             const prevDir = vec3.create();
             vec3.subtract(prevDir, pos, prevPos);

@@ -23,7 +23,7 @@ export default class DefaultShaderMesh extends Mesh{
         const positionAttribDesc: GPUVertexAttribute = {
             shaderLocation: 0, // [[location(0)]]
             offset: 0,
-            format: 'float32x4'
+            format: 'float32x3'
         };
         const colorAttribDesc: GPUVertexAttribute = {
             shaderLocation: 1, // [[location(1)]]
@@ -43,7 +43,7 @@ export default class DefaultShaderMesh extends Mesh{
 
         const positionBufferDesc: GPUVertexBufferLayout = {
             attributes: [positionAttribDesc],
-            arrayStride: 4 * 4, // sizeof(float) * 4
+            arrayStride: 4 * 3, // sizeof(float) * 3
             stepMode: 'vertex'
         };
         const colorBufferDesc: GPUVertexBufferLayout = {
