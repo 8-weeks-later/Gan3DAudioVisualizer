@@ -1,7 +1,7 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
 
-export default class CubemapShaderMesh extends Mesh{
+export default class CubeMapShaderMesh extends Mesh{
     cubemapTexture: GPUTexture;
 
     constructor(meshData: MeshData, device: GPUDevice);

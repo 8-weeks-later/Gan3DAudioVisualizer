@@ -4,50 +4,11 @@ import MeshData from "./meshData";
 import vsCode from '../shaders/cubemap.vert.wgsl';
 import fsCode from '../shaders/cubemap.frag.wgsl';
 import Camera from '../engine/camera';
+import CubeMapManager from '../engine/cubeMapManager';
 
-export default class CubemapShaderMesh extends Mesh{
-    cubemapTexture: GPUTexture;
-
+export default class CubeMapShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
         super(meshData, device);
-    }
-
-    async loadCubeMap(){
-        // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
-        const imgSrcs = [
-            '../assets/img/cubemap/spaceblue/posx.png',
-            '../assets/img/cubemap/spaceblue/negx.png',
-            '../assets/img/cubemap/spaceblue/posy.png',
-            '../assets/img/cubemap/spaceblue/negy.png',
-            '../assets/img/cubemap/spaceblue/posz.png',
-            '../assets/img/cubemap/spaceblue/negz.png',
-        ];
-        const promises = imgSrcs.map(async (src) => {
-          const response = await fetch(src);
-          return createImageBitmap(await response.blob());
-        });
-        const imageBitmaps = await Promise.all(promises);
-    
-        this.cubemapTexture = this.device.createTexture({
-          dimension: '2d',
-          // Create a 2d array texture.
-          // Assume each image has the same size.
-          size: [imageBitmaps[0].width, imageBitmaps[0].height, 6],
-          format: 'rgba8unorm',
-          usage:
-            GPUTextureUsage.TEXTURE_BINDING |
-            GPUTextureUsage.COPY_DST |
-            GPUTextureUsage.RENDER_ATTACHMENT,
-        });
-    
-        for (let i = 0; i < imageBitmaps.length; i++) {
-          const imageBitmap = imageBitmaps[i];
-          this.device.queue.copyExternalImageToTexture(
-            { source: imageBitmap },
-            { texture: this.cubemapTexture, origin: [0, 0, i] },
-            [imageBitmap.width, imageBitmap.height]
-          );
-        }
     }
 
     createShaderModel(){
@@ -155,6 +116,7 @@ export default class CubemapShaderMesh extends Mesh{
             mipmapFilter: "linear",
         });
 
+        const cubeMapTexture = CubeMapManager.getInstance().getCubeMapTexture();
         const bindGroup = this.device.createBindGroup({
             layout: this.pipeline.getBindGroupLayout(0),
             entries: [{
@@ -166,7 +128,7 @@ export default class CubemapShaderMesh extends Mesh{
                 
             }, {
                 binding: 2,
-                resource: this.cubemapTexture.createView({
+                resource: cubeMapTexture.createView({
                     dimension: 'cube',
                 }),
             }],
