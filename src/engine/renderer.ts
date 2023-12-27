@@ -23,7 +23,6 @@ export default class Renderer {
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
-    cubemapTexture: GPUTexture;
     //#endregion fields
 
     constructor(canvas) {
