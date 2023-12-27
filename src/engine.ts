@@ -35,12 +35,14 @@ export default class Engine {
         await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
         this.renderer.render();
 
-        while(1){
-            // TODO: remove force delay
-            // Update
-            await new Promise(f => setTimeout(f, 1000)); 
-            console.log("Updated!!")
-        }
+        // TODO: InputManager에서 로직 처리
+        this.canvas.addEventListener("wheel", (e) => {
+            Camera.getInstance().moveForward(e.deltaY / 100);
+        });
+
+        this.canvas.addEventListener("mousemove", (e) => {
+            Camera.getInstance().rotateXY(e.movementY / 100, e.movementX / 100);
+        });
     }
 
     initCanvas(canvas: HTMLCanvasElement){

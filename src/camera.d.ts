@@ -11,6 +11,8 @@ export default class Camera {
     private position: vec3;
     private rotation: vec3;
 
+    readonly maxDistance: number;
+
     public initialize(): void;
     public getPosition(): vec3;
     public getProjectionMatrix(): mat4;
@@ -19,4 +21,6 @@ export default class Camera {
     public updateViewMatrix(): void;
     public setPosition(position: vec3): void;
     public setRotation(rotation: vec3): void;
+    public moveForward(distance: number): void;
+    public rotateXY(x: number, y: number): void;
 }

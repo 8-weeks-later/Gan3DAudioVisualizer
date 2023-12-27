@@ -1,4 +1,4 @@
-import { mat4, vec3 } from "gl-matrix";
+import { glMatrix, mat4, vec3 } from 'gl-matrix';
 import CameraSetting, { canvasSize } from "./setting";
 
 export default class Camera{
@@ -18,6 +18,8 @@ export default class Camera{
 
     private position: vec3 = vec3.create();
     private rotation: vec3 = vec3.create();
+
+    readonly maxDistance: number = 20;
 
     public initialize(): void {
         this.updateProjectionMatrix();
@@ -56,6 +58,31 @@ export default class Camera{
 
     public setRotation(rotation: vec3): void {
         this.rotation = rotation;
+        this.updateViewMatrix();
+    }
+
+    public moveForward(distance: number): void {
+        const forward = vec3.create();
+        vec3.set(forward, 0, 0, distance);
+        const toRadian = glMatrix.toRadian;
+        vec3.rotateX(forward, forward, [0, 0, 0], toRadian(this.rotation[0]));
+        vec3.rotateY(forward, forward, [0, 0, 0], toRadian(this.rotation[1]));
+        vec3.rotateZ(forward, forward, [0, 0, 0], toRadian(this.rotation[2]));
+        vec3.add(this.position, this.position, forward);
+
+        this.position[0] = Math.min(this.position[0], this.maxDistance);
+        this.position[0] = Math.max(this.position[0], -this.maxDistance);
+        this.position[1] = Math.min(this.position[1], this.maxDistance);
+        this.position[1] = Math.max(this.position[1], -this.maxDistance);
+        this.position[2] = Math.min(this.position[2], this.maxDistance);
+        this.position[2] = Math.max(this.position[2], -this.maxDistance);
+
+        this.updateViewMatrix();
+    }
+
+    public rotateXY(x: number, y: number): void {
+        this.rotation[0] += x;
+        this.rotation[1] += y;
         this.updateViewMatrix();
     }
 }
