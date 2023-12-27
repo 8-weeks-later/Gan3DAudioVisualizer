@@ -22,6 +22,8 @@ export default class Camera{
     readonly maxDistance: number = 20;
 
     public initialize(): void {
+        this.position = vec3.fromValues(0, 0, -10);
+        this.rotation = vec3.fromValues(0, 0, 0);
         this.updateProjectionMatrix();
         this.updateViewMatrix();
     }
