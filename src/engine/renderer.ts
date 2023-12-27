@@ -1,7 +1,7 @@
-import DefaultShaderMesh from './objects/defaultShaderMesh';
-import CubemapShaderMesh from './objects/cubemapShaderMesh';
-import Mesh from './objects/mesh';
-import MeshData from './objects/meshData';
+import DefaultShaderMesh from '../objects/defaultShaderMesh';
+import CubemapShaderMesh from '../objects/cubemapShaderMesh';
+import Mesh from '../objects/mesh';
+import MeshData from '../objects/meshData';
 
 export default class Renderer {
     //#region fields

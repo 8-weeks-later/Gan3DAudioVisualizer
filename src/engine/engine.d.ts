@@ -1,5 +1,5 @@
 import Renderer from "./renderer";
-import AudioAnalyser from "./audioAnalyser/audioAnalyser";
+import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 
 export default class Engine {
     canvas: HTMLCanvasElement;

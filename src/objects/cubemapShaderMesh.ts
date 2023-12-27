@@ -5,6 +5,7 @@ import { mat4, vec4 } from 'gl-matrix';
 import vsCode from '../shaders/cubemap.vert.wgsl';
 import fsCode from '../shaders/cubemap.frag.wgsl';
 import CameraSetting, { canvasSize } from "../setting";
+import Camera from '../engine/camera';
 
 export default class CubemapShaderMesh extends Mesh{
     cubemapTexture: GPUTexture;
@@ -16,12 +17,12 @@ export default class CubemapShaderMesh extends Mesh{
     async loadCubeMap(){
         // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
         const imgSrcs = [
-            '../assets/img/cubemap/posx.jpg',
-            '../assets/img/cubemap/negx.jpg',
-            '../assets/img/cubemap/posy.jpg',
-            '../assets/img/cubemap/negy.jpg',
-            '../assets/img/cubemap/posz.jpg',
-            '../assets/img/cubemap/negz.jpg',
+            '../assets/img/cubemap/spaceblue/posx.png',
+            '../assets/img/cubemap/spaceblue/negx.png',
+            '../assets/img/cubemap/spaceblue/posy.png',
+            '../assets/img/cubemap/spaceblue/negy.png',
+            '../assets/img/cubemap/spaceblue/posz.png',
+            '../assets/img/cubemap/spaceblue/negz.png',
         ];
         const promises = imgSrcs.map(async (src) => {
           const response = await fetch(src);
@@ -172,18 +173,13 @@ export default class CubemapShaderMesh extends Mesh{
                 }),
             }],
             });
-        
-        const cameraArray = new Float32Array(36);
-        const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, CameraSetting.fovRadian, canvasSize / canvasSize, CameraSetting.near, CameraSetting.far);
-        const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
-        const cameraPosition = vec4.create();
-        vec4.set(cameraPosition, 0, 0, 0, 0);
 
-        cameraArray.set(projectionMatrix, 0);
-        cameraArray.set(viewMatrix, 16);
-        cameraArray.set(cameraPosition, 32);
+        const cameraInstance = Camera.getInstance();
+        const cameraArray = new Float32Array(36);
+
+        cameraArray.set(cameraInstance.getProjectionMatrix(), 0);
+        cameraArray.set(cameraInstance.getViewMatrix(), 16);
+        cameraArray.set(cameraInstance.getPosition(), 32);
 
         // Update the camera uniform buffer
         this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);

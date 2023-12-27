@@ -1,7 +1,9 @@
-import { canvasSize } from "./setting";
-import GeometryGenerator from "./objects/geometryGenerator";
+import { canvasSize } from "../setting";
+import GeometryGenerator from "../objects/geometryGenerator";
 import Renderer from "./renderer";
-import AudioAnalyser from "./audioAnalyser/audioAnalyser";
+import Camera from "./camera";
+import AudioAnalyser from "../audioAnalyser/audioAnalyser";
+import InputManager from './inputManager';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -28,15 +30,13 @@ export default class Engine {
 
         this.renderer.resizeBackings();
 
+        Camera.getInstance().initialize();
+        Camera.getInstance().setPosition([0, 0, -10]);
+
         await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
         this.renderer.render();
 
-        while(1){
-            // TODO: remove force delay
-            // Update
-            await new Promise(f => setTimeout(f, 1000)); 
-            console.log("Updated!!")
-        }
+        InputManager.getInstance().init(this.canvas);
     }
 
     initCanvas(canvas: HTMLCanvasElement){

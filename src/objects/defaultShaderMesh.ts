@@ -1,5 +1,6 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
+import Camera from "../engine/camera";
 import { mat4, vec3, vec4 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
@@ -181,25 +182,22 @@ export default class DefaultShaderMesh extends Mesh{
             }],
             });
         
-        const cameraArray = new Float32Array(36);
-        const projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, CameraSetting.fovRadian, canvasSize / canvasSize, CameraSetting.near, CameraSetting.far);
-        const viewMatrix = mat4.create();
-        mat4.translate(viewMatrix, viewMatrix, [0, 0, -10]);
-        const cameraPosition = vec4.create();
-        vec4.set(cameraPosition, 0, 0, -10, 0);
 
+        const cameraInstance = Camera.getInstance();
+        const cameraArray = new Float32Array(36);
+
+        mat4.rotate(this.transform, this.transform, 1 * 0.04, [0, 1, 0]);
         mat4.rotateZ(this.transform, this.transform, 1 * 0.04);
 
-        cameraArray.set(projectionMatrix, 0);
-        cameraArray.set(viewMatrix, 16);
-        cameraArray.set(cameraPosition, 32);
+        cameraArray.set(cameraInstance.getProjectionMatrix(), 0);
+        cameraArray.set(cameraInstance.getViewMatrix(), 16);
+        cameraArray.set(cameraInstance.getPosition(), 32);
 
         this.device.queue.writeBuffer(cameraBuffer, 0, cameraArray);
         this.device.queue.writeBuffer(modelBuffer, 0, this.transform as Float32Array);
 
         const eyePositionArray = new Float32Array(4);
-        eyePositionArray.set(cameraPosition, 0);
+        eyePositionArray.set(cameraInstance.getPosition(), 0);
         this.device.queue.writeBuffer(eyePositionBuffer, 0, eyePositionArray);
 
         const lightArray = new Float32Array(24);
