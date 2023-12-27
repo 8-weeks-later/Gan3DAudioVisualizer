@@ -32,6 +32,22 @@ export default class CubeMapManager{
             '../assets/img/cubemap/spaceblue/negy.png',
             '../assets/img/cubemap/spaceblue/posz.png',
             '../assets/img/cubemap/spaceblue/negz.png',
+        ],
+        [
+            '../assets/img/cubemap/solid/white.png',
+            '../assets/img/cubemap/solid/white.png',
+            '../assets/img/cubemap/solid/white.png',
+            '../assets/img/cubemap/solid/white.png',
+            '../assets/img/cubemap/solid/white.png',
+            '../assets/img/cubemap/solid/white.png',
+        ],
+        [
+            '../assets/img/cubemap/solid/gray.png',
+            '../assets/img/cubemap/solid/gray.png',
+            '../assets/img/cubemap/solid/gray.png',
+            '../assets/img/cubemap/solid/gray.png',
+            '../assets/img/cubemap/solid/gray.png',
+            '../assets/img/cubemap/solid/gray.png',
         ]
     ]
 
