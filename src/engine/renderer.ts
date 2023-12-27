@@ -1,7 +1,8 @@
 import DefaultShaderMesh from '../objects/defaultShaderMesh';
-import CubemapShaderMesh from '../objects/cubemapShaderMesh';
+import CubeMapShaderMesh from '../objects/cubeMapShaderMesh';
 import Mesh from '../objects/mesh';
 import MeshData from '../objects/meshData';
+import CubeMapManager from './cubeMapManager';
 
 export default class Renderer {
     //#region fields
@@ -23,7 +24,6 @@ export default class Renderer {
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
-    cubemapTexture: GPUTexture;
     //#endregion fields
 
     constructor(canvas) {
@@ -148,8 +148,8 @@ export default class Renderer {
 
     async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
         let mesh = new DefaultShaderMesh(meshData, this.device);
-        let cubeMapMesh = new CubemapShaderMesh(cubeMapMeshData, this.device);
-        await cubeMapMesh.loadCubeMap();
+        let cubeMapMesh = new CubeMapShaderMesh(cubeMapMeshData, this.device);
+        await CubeMapManager.getInstance().loadCubeMap(this.device);
         
         this.meshes.push(mesh);
         this.meshes.push(cubeMapMesh);

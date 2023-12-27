@@ -1,11 +1,10 @@
 import Mesh from "./mesh";
 import MeshData from "./meshData";
 import Camera from "../engine/camera";
-import { mat4, vec3, vec4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
 import fsCode from '../shaders/default.frag.wgsl';
-import CameraSetting, { canvasSize } from "../setting";
 
 export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
