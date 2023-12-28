@@ -23,9 +23,14 @@ export default class Engine {
             return;
         }
 
-        const input = document.querySelector("input");
-        input.addEventListener("input", () => {
+        const soundInput = document.querySelector("#soundFileInput");
+        soundInput.addEventListener("input", () => {
             this.analyseAudio();
+        });
+
+        const objInput = document.querySelector("#objFileInput") as HTMLInputElement;
+        objInput?.addEventListener("input", () => {
+            this.loadObjFile(objInput);
         });
 
         this.renderer.resizeBackings();
@@ -33,7 +38,7 @@ export default class Engine {
         Camera.getInstance().initialize();
         Camera.getInstance().setPosition([0, 0, -10]);
 
-        await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
+        await this.renderer.setMesh(this.geoGen.makeBox(0.01), this.geoGen.makeBox(45));
         this.renderer.render();
 
         InputManager.getInstance().init(this.canvas, this.renderer.device);
