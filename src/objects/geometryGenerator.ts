@@ -1,5 +1,6 @@
 import { vec3 } from "gl-matrix";
 import MeshData from "./meshData";
+import ObjLoader from './objLoader';
 
 const PI = 3.1415926535897932384626433832795;
 const TWO_PI = 2.0 * PI;
@@ -323,5 +324,24 @@ export default class GeometryGenerator{
         }
 
         return grid;
+    }
+
+    makeObjMesh(obj: string): MeshData{
+        let objData = this.objLoader.parse(obj);
+        for (let i = 0; i < objData.colors.length; i += 4) {
+            objData.colors[i] = 0.6;
+            objData.colors[i + 1] = 0.6;
+            objData.colors[i + 2] = 0.6;
+            objData.colors[i + 3] = 1.0;
+        }
+        for (let i = 0; i < objData.normals.length; i += 3) {
+            if (objData.normals[i] == 0 && objData.normals[i + 1] == 0 && objData.normals[i + 2] == 0) {
+                const normal = vec3.normalize(vec3.create(), [objData.positions[i], objData.positions[i + 1], objData.positions[i + 2]]);
+                objData.normals[i] = normal[0];
+                objData.normals[i + 1] = normal[1];
+                objData.normals[i + 2] = normal[2];
+            }
+        }
+        return objData;
     }
 }

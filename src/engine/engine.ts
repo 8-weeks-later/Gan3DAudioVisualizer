@@ -47,4 +47,14 @@ export default class Engine {
         const data = await this.audioAnalyser.analyse();
         await this.renderer.setMesh(this.geoGen.makeAudioMesh(data, 5, 64), this.geoGen.makeBox(45));
     }
+
+    async loadObjFile(objInput: HTMLInputElement): Promise<void>{
+        const response = await fetch(URL.createObjectURL(objInput.files[0]))
+        if (!response.ok){
+            throw new Error("Failed to load obj file");
+        }
+        const file = await response.text();
+        await this.renderer.setMesh(this.geoGen.makeObjMesh(file), this.geoGen.makeBox(45));
+        console.log("Loaded obj file");
+    }
 }
