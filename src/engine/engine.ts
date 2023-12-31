@@ -4,6 +4,7 @@ import Renderer from "./renderer";
 import Camera from "./camera";
 import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 import InputManager from './inputManager';
+import ObjExporter from '../objects/objExporter';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -23,9 +24,26 @@ export default class Engine {
             return;
         }
 
-        const input = document.querySelector("input");
-        input.addEventListener("input", () => {
+        const soundInput = document.querySelector("#soundFileInput");
+        soundInput.addEventListener("input", () => {
             this.analyseAudio();
+        });
+
+        const objInput = document.querySelector("#objFileInput") as HTMLInputElement;
+        objInput?.addEventListener("input", () => {
+            this.loadObjFile(objInput);
+        });
+
+
+        const objExportButton = document.querySelector("#objExportButton");
+        objExportButton?.addEventListener("click", () => {
+            console.log(this.renderer.meshes.length);
+            const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
+            const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
+            const a = document.createElement("a");
+            a.download = "mesh.obj";
+            a.href = URL.createObjectURL(blob);
+            a.click();
         });
 
         this.renderer.resizeBackings();
@@ -33,7 +51,7 @@ export default class Engine {
         Camera.getInstance().initialize();
         Camera.getInstance().setPosition([0, 0, -10]);
 
-        await this.renderer.setMesh(this.geoGen.makeBox(1), this.geoGen.makeBox(45));
+        await this.renderer.setMesh(this.geoGen.makeBox(0.01), this.geoGen.makeBox(45));
         this.renderer.render();
 
         InputManager.getInstance().init(this.canvas, this.renderer.device);
@@ -46,5 +64,15 @@ export default class Engine {
     async analyseAudio(): Promise<void>{
         const data = await this.audioAnalyser.analyse();
         await this.renderer.setMesh(this.geoGen.makeAudioMesh(data, 5, 64), this.geoGen.makeBox(45));
+    }
+
+    async loadObjFile(objInput: HTMLInputElement): Promise<void>{
+        const response = await fetch(URL.createObjectURL(objInput.files[0]))
+        if (!response.ok){
+            throw new Error("Failed to load obj file");
+        }
+        const file = await response.text();
+        await this.renderer.setMesh(this.geoGen.makeObjMesh(file), this.geoGen.makeBox(45));
+        console.log("Loaded obj file");
     }
 }

@@ -15,9 +15,13 @@ export default class Mesh{
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
 
+    meshData: MeshData;
+
     transform: mat4;
 
     constructor(meshData: MeshData, device: GPUDevice){
+        this.meshData = meshData;
+
         const createBuffer = (
             arr: Float32Array | Uint16Array,
             usage: number

@@ -12,11 +12,18 @@
         <img src="assets/img/bonobono.webp" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.5;"/>
       </div>
       <canvas id="gfx" style="display: table; margin-left: auto; margin-right: auto;" class="align-center" tabindex="1"></canvas>
+
       <div style="margin-top: 10px;" class="hbox pack gap(20) p(10) b(orange)">
         <input type="file" name="soundFile" id="soundFileInput" accept="audio/*">
         <button id="test" class="hbox pack bg(#333) c(#fff) r(6) p(8/12) font(14/16/-1%) bold pointer">click me</button>
         <audio controls disableRemotePlayback src="/assets/sound/forest.mp3">Your browser does not support audio.</audio>
       </div>
+
+      <div style="margin-top: 10px;" class="hbox pack gap(20) p(10) b(blue)">
+        <input type="file" name="objFile" id="objFileInput" accept="model/mesh">
+        <button id="objExportButton" class="hbox pack bg(#333) c(#fff) r(6) p(8/12) font(14/16/-1%) bold pointer">Export</button>
+      </div>
+
     </div>
     <script type="module" src="dist/main.js"></script>
     <script src="https://unpkg.com/adorable-css@1.4.3"></script>

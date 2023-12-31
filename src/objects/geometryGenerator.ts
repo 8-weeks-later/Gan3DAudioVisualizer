@@ -1,5 +1,6 @@
 import { vec3 } from "gl-matrix";
 import MeshData from "./meshData";
+import ObjLoader from './objLoader';
 
 const PI = 3.1415926535897932384626433832795;
 const TWO_PI = 2.0 * PI;
@@ -9,11 +10,13 @@ const SQRT3 = 1.73205080756887729352;
 const SQRT6 = 2.44948974278317809820;
 
 export default class GeometryGenerator{
+    private objLoader: ObjLoader = new ObjLoader();
+
     makeTriangle(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0, 1,
-            scale, -scale, 0.0, 1,
-            0.0, scale, 0.0, 1,
+            -scale, -scale, 0.0,
+            scale, -scale, 0.0,
+            0.0, scale, 0.0,
         ]);
         let colors = new Float32Array([
             1.0, 0.0, 0.0, 1.0,
@@ -38,10 +41,10 @@ export default class GeometryGenerator{
 
     makeSquare(scale: number): MeshData{
         let positions = new Float32Array([
-            -scale, -scale, 0.0, 1,
-            scale, -scale, 0.0, 1,
-            scale, scale, 0.0, 1,
-            -scale, scale, 0.0, 1,
+            -scale, -scale, 0.0,
+            scale, -scale, 0.0,
+            scale, scale, 0.0,
+            -scale, scale, 0.0,
         ]);
         let colors = new Float32Array([
             1.0, 1.0, 1.0, 1.0,
@@ -90,7 +93,6 @@ export default class GeometryGenerator{
                 position.push(stackStartX + dx * j);
                 position.push(stackStartY);
                 position.push(stackStartZ);
-                position.push(1.0);
 
                 color.push(i / numStacks);
                 color.push(1.0 - i / numStacks);
@@ -130,35 +132,35 @@ export default class GeometryGenerator{
     makeBox(scale: number): MeshData{
         let positions = new Float32Array([
             // top
-            -scale, scale, -scale, 1,
-            -scale, scale, scale, 1,
-            scale, scale, scale, 1,
-            scale, scale, -scale, 1,
+            -scale, scale, -scale,
+            -scale, scale, scale,
+            scale, scale, scale,
+            scale, scale, -scale,
             // bottom
-            -scale, -scale, -scale, 1,
-            scale, -scale, -scale, 1,
-            scale, -scale, scale, 1,
-            -scale, -scale, scale, 1,
+            -scale, -scale, -scale,
+            scale, -scale, -scale,
+            scale, -scale, scale,
+            -scale, -scale, scale,
             // front
-            -scale, -scale, -scale, 1,
-            -scale, scale, -scale, 1,
-            scale, scale, -scale, 1,
-            scale, -scale, -scale, 1,
+            -scale, -scale, -scale,
+            -scale, scale, -scale,
+            scale, scale, -scale,
+            scale, -scale, -scale,
             // back
-            -scale, -scale, scale, 1,
-            scale, -scale, scale, 1,
-            scale, scale, scale, 1,
-            -scale, scale, scale, 1,
+            -scale, -scale, scale,
+            scale, -scale, scale,
+            scale, scale, scale,
+            -scale, scale, scale,
             // left
-            -scale, -scale, scale, 1,
-            -scale, scale, scale, 1,
-            -scale, scale, -scale, 1,
-            -scale, -scale, -scale, 1,
+            -scale, -scale, scale,
+            -scale, scale, scale,
+            -scale, scale, -scale,
+            -scale, -scale, -scale,
             // right
-            scale, -scale, scale, 1,
-            scale, -scale, -scale, 1,
-            scale, scale, -scale, 1,
-            scale, scale, scale, 1,
+            scale, -scale, scale,
+            scale, -scale, -scale,
+            scale, scale, -scale,
+            scale, scale, scale,
         ]);
         let colors = new Float32Array([
             // top - red
@@ -289,7 +291,7 @@ export default class GeometryGenerator{
 
         for(let i = 0; i < data.length; i++)
         {
-            positions[i * 4 + 2] = data[i] / height * size;
+            positions[i * 3 + 2] = data[i] / height * size;
 
             const color = Math.min(1.0, data[i] / height + 0.3);
             grid.colors[i * 4] = color;
@@ -302,7 +304,7 @@ export default class GeometryGenerator{
             const base = i * 3;
             const pos: vec3 = [positions[base], positions[base + 1], positions[base + 2]];
             const prevPos: vec3 = [positions[base - 3], positions[base - 2], positions[base - 1]];
-            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + chunkSize], positions[base + chunkSize]];
+            const nextChunkPos: vec3 = [positions[base + chunkSize], positions[base + 1 + chunkSize], positions[base + 2 + chunkSize]];
 
             const prevDir = vec3.create();
             vec3.subtract(prevDir, pos, prevPos);
@@ -322,5 +324,18 @@ export default class GeometryGenerator{
         }
 
         return grid;
+    }
+
+    makeObjMesh(obj: string): MeshData{
+        let objData = this.objLoader.parse(obj);
+        for (let i = 0; i < objData.normals.length; i += 3) {
+            if (objData.normals[i] == 0 && objData.normals[i + 1] == 0 && objData.normals[i + 2] == 0) {
+                const normal = vec3.normalize(vec3.create(), [objData.positions[i], objData.positions[i + 1], objData.positions[i + 2]]);
+                objData.normals[i] = normal[0];
+                objData.normals[i + 1] = normal[1];
+                objData.normals[i + 2] = normal[2];
+            }
+        }
+        return objData;
     }
 }

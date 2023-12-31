@@ -15,6 +15,8 @@ export default class Mesh{
     vertModule: GPUShaderModule;
     fragModule: GPUShaderModule;
 
+    meshData: MeshData;
+
     transform: mat4;
 
     constructor(meshData: MeshData, device: GPUDevice);

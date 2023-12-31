@@ -36,7 +36,7 @@ fn computeLighting(inLight: Light, inMaterial: Material, inNormal: vec3f, inView
 }
 
 @fragment
-fn main(@location(0) inColor: vec3f,
+fn main(@location(0) inColor: vec4f,
         @location(1) inNornal: vec3f,
         @location(2) inPos: vec3f) -> @location(0) vec4f {
     var viewDir = normalize(vec3(eyePos.xyz) - inPos);
@@ -44,6 +44,6 @@ fn main(@location(0) inColor: vec3f,
     var outColor = computeLighting(light[0], material, inNornal, viewDir);
     outColor += computeLighting(light[1], material, inNornal, viewDir);
     outColor += computeLighting(light[2], material, inNornal, viewDir);
-    
-    return vec4f(inColor * outColor, 1);
+
+    return inColor * vec4f(outColor, 1.0);
 }
