@@ -4,6 +4,7 @@ import Renderer from "./renderer";
 import Camera from "./camera";
 import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 import InputManager from './inputManager';
+import ObjExporter from '../objects/objExporter';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -31,6 +32,18 @@ export default class Engine {
         const objInput = document.querySelector("#objFileInput") as HTMLInputElement;
         objInput?.addEventListener("input", () => {
             this.loadObjFile(objInput);
+        });
+
+
+        const objExportButton = document.querySelector("#objExportButton");
+        objExportButton?.addEventListener("click", () => {
+            console.log(this.renderer.meshes.length);
+            const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
+            const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
+            const a = document.createElement("a");
+            a.download = "mesh.obj";
+            a.href = URL.createObjectURL(blob);
+            a.click();
         });
 
         this.renderer.resizeBackings();

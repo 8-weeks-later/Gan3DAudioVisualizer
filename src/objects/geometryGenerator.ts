@@ -328,12 +328,6 @@ export default class GeometryGenerator{
 
     makeObjMesh(obj: string): MeshData{
         let objData = this.objLoader.parse(obj);
-        for (let i = 0; i < objData.colors.length; i += 4) {
-            objData.colors[i] = 0.6;
-            objData.colors[i + 1] = 0.6;
-            objData.colors[i + 2] = 0.6;
-            objData.colors[i + 3] = 1.0;
-        }
         for (let i = 0; i < objData.normals.length; i += 3) {
             if (objData.normals[i] == 0 && objData.normals[i + 1] == 0 && objData.normals[i + 2] == 0) {
                 const normal = vec3.normalize(vec3.create(), [objData.positions[i], objData.positions[i + 1], objData.positions[i + 2]]);
