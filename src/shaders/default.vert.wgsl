@@ -8,14 +8,14 @@ struct Camera {
 
 struct VSOut {
     @builtin(position) Position: vec4f,
-    @location(0) color: vec3f,
+    @location(0) color: vec4f,
     @location(1) normal: vec3f,
     @location(2) pos: vec3f
  };
 
 @vertex
 fn main(@location(0) inPos: vec3f,
-        @location(1) inColor: vec3f,
+        @location(1) inColor: vec4f,
         @location(2) uv: vec2f,
         @location(3) normal: vec3f) -> VSOut {
     var vsOut: VSOut;
