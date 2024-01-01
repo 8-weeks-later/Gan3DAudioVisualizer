@@ -48,7 +48,9 @@ export default class InputManager {
             Camera.getInstance().initialize();
         }
 
-        InputManager.getInstance().processNumberKey(keyboardEvent);
+        const inputManager = InputManager.getInstance();
+        inputManager.processMoveKey(keyboardEvent);
+        inputManager.processNumberKey(keyboardEvent);
     }
 
     public onKeyUp(keyboardEvent: KeyboardEvent): void {
@@ -56,6 +58,22 @@ export default class InputManager {
 
     public onWheel(wheelEvent: WheelEvent): void {
         Camera.getInstance().moveForward(wheelEvent.deltaY / 100);
+    }
+
+    private processMoveKey(keyboardEvent: KeyboardEvent): void {
+        const moveSpeed = 0.3;
+        if (keyboardEvent.key == "w")
+            Camera.getInstance().moveForward(moveSpeed);
+        if (keyboardEvent.key == "s")
+            Camera.getInstance().moveForward(-moveSpeed);
+        if (keyboardEvent.key == "a")
+            Camera.getInstance().moveRight(moveSpeed);
+        if (keyboardEvent.key == "d")
+            Camera.getInstance().moveRight(-moveSpeed);
+        if (keyboardEvent.key == "q")
+            Camera.getInstance().moveUp(-moveSpeed);
+        if (keyboardEvent.key == "e")
+            Camera.getInstance().moveUp(moveSpeed);
     }
 
     private processNumberKey(keyboardEvent: KeyboardEvent): void {
