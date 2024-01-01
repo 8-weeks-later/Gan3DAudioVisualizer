@@ -34,7 +34,6 @@ export default class Engine {
             this.loadObjFile(objInput);
         });
 
-
         const objExportButton = document.querySelector("#objExportButton");
         objExportButton?.addEventListener("click", () => {
             console.log(this.renderer.meshes.length);

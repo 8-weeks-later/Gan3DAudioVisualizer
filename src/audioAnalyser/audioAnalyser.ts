@@ -18,11 +18,16 @@ export default class AudioFileAnalyser {
     }
 
     // https://meyda.js.org/audio-features#amplitudespectrum
-    // TODO: amplitudeSpectrum과 powerSpectrum의 비교
     async analyse(): Promise<number[]>{
         const array = [];
         await fetch(URL.createObjectURL(this.input.files[0]))
-            .then((response) => response.arrayBuffer())
+            .then((response) => {
+                const soundElement = document.getElementById('soundPlayer') as HTMLAudioElement;
+                soundElement.src = response.url;
+                soundElement.play();
+
+                return response.arrayBuffer();
+            })
             .then((arrayBuffer) => {
                 var offlineAudioContext = new OfflineAudioContext({
                     length: 1,
@@ -47,7 +52,7 @@ export default class AudioFileAnalyser {
                     let j = 0;
                     const length = amplitudeSpectrum.length;
                     while (j < length) {
-                        var value = amplitudeSpectrum.slice(j, j += chunkSize).reduce(function (total, value) {
+                        let value = amplitudeSpectrum.slice(j, j += chunkSize).reduce(function (total, value) {
                             return Math.max(total, Math.abs(value));
                         });
                         array.push(value);
