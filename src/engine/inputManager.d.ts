@@ -25,5 +25,7 @@ export default class InputManager {
     public onWheel(wheelEvent: WheelEvent): void;
 
     // @ts-ignore
+    private processMoveKey(keyboardEvent: KeyboardEvent): void;
+    // @ts-ignore
     private processNumberKey(keyboardEvent: KeyboardEvent): void;
 }

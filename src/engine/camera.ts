@@ -72,14 +72,44 @@ export default class Camera{
         vec3.rotateZ(forward, forward, [0, 0, 0], toRadian(this.rotation[2]));
         vec3.add(this.position, this.position, forward);
 
-        this.position[0] = Math.min(this.position[0], this.maxDistance);
-        this.position[0] = Math.max(this.position[0], -this.maxDistance);
-        this.position[1] = Math.min(this.position[1], this.maxDistance);
-        this.position[1] = Math.max(this.position[1], -this.maxDistance);
-        this.position[2] = Math.min(this.position[2], this.maxDistance);
-        this.position[2] = Math.max(this.position[2], -this.maxDistance);
-
+        this.clampPosition(this.position);
         this.updateViewMatrix();
+    }
+
+    public moveRight(distance: number): void {
+        const right = vec3.create();
+        vec3.set(right, distance, 0, 0);
+        const toRadian = glMatrix.toRadian;
+        vec3.rotateX(right, right, [0, 0, 0], toRadian(this.rotation[0]));
+        vec3.rotateY(right, right, [0, 0, 0], toRadian(this.rotation[1]));
+        vec3.rotateZ(right, right, [0, 0, 0], toRadian(this.rotation[2]));
+        vec3.add(this.position, this.position, right);
+
+        this.clampPosition(this.position);
+        this.updateViewMatrix();
+    }
+
+    public moveUp(distance: number): void {
+        const up = vec3.create();
+        vec3.set(up, 0, distance, 0);
+        const toRadian = glMatrix.toRadian;
+        vec3.rotateX(up, up, [0, 0, 0], toRadian(this.rotation[0]));
+        vec3.rotateY(up, up, [0, 0, 0], toRadian(this.rotation[1]));
+        vec3.rotateZ(up, up, [0, 0, 0], toRadian(this.rotation[2]));
+        vec3.add(this.position, this.position, up);
+
+        this.clampPosition(this.position);
+        this.updateViewMatrix();
+    }
+
+    private clampPosition(position: vec3): vec3 {
+        position[0] = Math.min(position[0], this.maxDistance);
+        position[0] = Math.max(position[0], -this.maxDistance);
+        position[1] = Math.min(position[1], this.maxDistance);
+        position[1] = Math.max(position[1], -this.maxDistance);
+        position[2] = Math.min(position[2], this.maxDistance);
+        position[2] = Math.max(position[2], -this.maxDistance);
+        return position;
     }
 
     public rotateXY(x: number, y: number): void {

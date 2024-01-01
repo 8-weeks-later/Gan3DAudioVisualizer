@@ -22,5 +22,8 @@ export default class Camera {
     public setPosition(position: vec3): void;
     public setRotation(rotation: vec3): void;
     public moveForward(distance: number): void;
+    public moveRight(distance: number): void;
+    public moveUp(distance: number): void;
+    private clampPosition(position: vec3): vec3;
     public rotateXY(x: number, y: number): void;
 }
