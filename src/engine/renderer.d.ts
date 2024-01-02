@@ -1,4 +1,3 @@
-import { mat4 } from "gl-matrix";
 import Mesh from "../objects/mesh";
 import MeshData from "../objects/meshData";
 
