@@ -78,7 +78,6 @@ export default class Engine {
 
         const objExportButton = document.querySelector("#objExportButton");
         objExportButton?.addEventListener("click", () => {
-            console.log(this.renderer.meshes.length);
             const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
             const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
             const a = document.createElement("a");
@@ -133,5 +132,65 @@ export default class Engine {
                 light.intensity = parseFloat(lightIntensityInput.value) / 50;
             });
         }
+
+        const materialAmbientRInput = document.querySelector("#ambientRangeR") as HTMLInputElement;
+        materialAmbientRInput.value = `${interactionParameter.GetMaterial().ambient[0] * 100}`;
+        materialAmbientRInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().ambient[0] = parseFloat(materialAmbientRInput.value) / 100;
+        });
+
+        const materialAmbientGInput = document.querySelector("#ambientRangeG") as HTMLInputElement;
+        materialAmbientGInput.value = `${interactionParameter.GetMaterial().ambient[1] * 100}`;
+        materialAmbientGInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().ambient[1] = parseFloat(materialAmbientGInput.value) / 100;
+        });
+
+        const materialAmbientBInput = document.querySelector("#ambientRangeB") as HTMLInputElement;
+        materialAmbientBInput.value = `${interactionParameter.GetMaterial().ambient[2] * 100}`;
+        materialAmbientBInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().ambient[2] = parseFloat(materialAmbientBInput.value) / 100;
+        });
+
+        const materialDiffuseRInput = document.querySelector("#diffuseRangeR") as HTMLInputElement;
+        materialDiffuseRInput.value = `${interactionParameter.GetMaterial().diffuse[0] * 100}`;
+        materialDiffuseRInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().diffuse[0] = parseFloat(materialDiffuseRInput.value) / 100;
+        });
+
+        const materialDiffuseGInput = document.querySelector("#diffuseRangeG") as HTMLInputElement;
+        materialDiffuseGInput.value = `${interactionParameter.GetMaterial().diffuse[1] * 100}`;
+        materialDiffuseGInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().diffuse[1] = parseFloat(materialDiffuseGInput.value) / 100;
+        });
+
+        const materialDiffuseBInput = document.querySelector("#diffuseRangeB") as HTMLInputElement;
+        materialDiffuseBInput.value = `${interactionParameter.GetMaterial().diffuse[2] * 100}`;
+        materialDiffuseBInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().diffuse[2] = parseFloat(materialDiffuseBInput.value) / 100;
+        });
+
+        const materialSpecularRInput = document.querySelector("#specularRangeR") as HTMLInputElement;
+        materialSpecularRInput.value = `${interactionParameter.GetMaterial().specular[0] * 100}`;
+        materialSpecularRInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().specular[0] = parseFloat(materialSpecularRInput.value) / 100;
+        });
+
+        const materialSpecularGInput = document.querySelector("#specularRangeG") as HTMLInputElement;
+        materialSpecularGInput.value = `${interactionParameter.GetMaterial().specular[1] * 100}`;
+        materialSpecularGInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().specular[1] = parseFloat(materialSpecularGInput.value) / 100;
+        });
+
+        const materialSpecularBInput = document.querySelector("#specularRangeB") as HTMLInputElement;
+        materialSpecularBInput.value = `${interactionParameter.GetMaterial().specular[2] * 100}`;
+        materialSpecularBInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().specular[2] = parseFloat(materialSpecularBInput.value) / 100;
+        });
+
+        const materialShininessInput = document.querySelector("#shininessRange") as HTMLInputElement;
+        materialShininessInput.value = `${interactionParameter.GetMaterial().shininess}`;
+        materialShininessInput.addEventListener("input", () => {
+            interactionParameter.GetMaterial().shininess = parseFloat(materialShininessInput.value);
+        });
     }
 }
