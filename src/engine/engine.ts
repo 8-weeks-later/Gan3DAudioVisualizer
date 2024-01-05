@@ -5,6 +5,7 @@ import Camera from "./camera";
 import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 import InputManager from './inputManager';
 import ObjExporter from '../objects/objExporter';
+import { mat4 } from 'gl-matrix';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -50,7 +51,8 @@ export default class Engine {
         Camera.getInstance().initialize();
         Camera.getInstance().setPosition([0, 0, -10]);
 
-        await this.renderer.setMesh(this.geoGen.makeBox(0.01), this.geoGen.makeBox(45));
+        this.renderer.setMesh(this.geoGen.makeBox(1));
+        await this.renderer.setCubeMapMesh(this.geoGen.makeBox(40));
         this.renderer.render();
 
         InputManager.getInstance().init(this.canvas, this.renderer.device);
@@ -62,7 +64,7 @@ export default class Engine {
 
     async analyseAudio(): Promise<void>{
         const data = await this.audioAnalyser.analyse();
-        await this.renderer.setMesh(this.geoGen.makeAudioMesh(data, 5, 64), this.geoGen.makeBox(45));
+        this.renderer.setMesh(this.geoGen.makeAudioMesh(data, 5, 64));
     }
 
     async loadObjFile(objInput: HTMLInputElement): Promise<void>{
@@ -71,7 +73,10 @@ export default class Engine {
             throw new Error("Failed to load obj file");
         }
         const file = await response.text();
-        await this.renderer.setMesh(this.geoGen.makeObjMesh(file), this.geoGen.makeBox(45));
+        this.renderer.setMesh(this.geoGen.makeObjMesh(file));
+        let mesh = this.renderer.meshes[0];
+        mat4.rotateX(mesh.transform, mesh.transform, Math.PI / 2);
+        mesh.rotType = 1;
         console.log("Loaded obj file");
     }
 }

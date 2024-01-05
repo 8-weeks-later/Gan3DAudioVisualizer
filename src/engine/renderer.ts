@@ -21,6 +21,7 @@ export default class Renderer {
     depthTextureView: GPUTextureView;
 
     meshes: Mesh[];
+    cubeMapMesh: Mesh;
 
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
@@ -138,6 +139,7 @@ export default class Renderer {
             this.canvas.height
         );
 
+        this.cubeMapMesh.render(this.passEncoder);
         this.meshes.forEach(mesh => {
             mesh.render(this.passEncoder);
         });
@@ -146,12 +148,19 @@ export default class Renderer {
         this.queue.submit([this.commandEncoder.finish()]);
     }
 
-    async setMesh(meshData: MeshData, cubeMapMeshData: MeshData): Promise<void> {
+    setMesh(meshData: MeshData): void {
         let mesh = new DefaultShaderMesh(meshData, this.device);
-        let cubeMapMesh = new CubeMapShaderMesh(cubeMapMeshData, this.device);
+        if (this.meshes.length >= 1){
+            this.meshes[0] = mesh;
+        }
+        else{
+            this.meshes.push(mesh);
+        }
+    }
+
+    async setCubeMapMesh(meshData: MeshData): Promise<void> {
+        let cubeMapMesh = new CubeMapShaderMesh(meshData, this.device);
         await CubeMapManager.getInstance().loadCubeMap(this.device);
-        
-        this.meshes.push(mesh);
-        this.meshes.push(cubeMapMesh);
+        this.cubeMapMesh = cubeMapMesh;
     }
 }
