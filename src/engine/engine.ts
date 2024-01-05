@@ -25,26 +25,7 @@ export default class Engine {
             return;
         }
 
-        const soundInput = document.querySelector("#soundFileInput");
-        soundInput.addEventListener("input", () => {
-            this.analyseAudio();
-        });
-
-        const objInput = document.querySelector("#objFileInput") as HTMLInputElement;
-        objInput?.addEventListener("input", () => {
-            this.loadObjFile(objInput);
-        });
-
-        const objExportButton = document.querySelector("#objExportButton");
-        objExportButton?.addEventListener("click", () => {
-            console.log(this.renderer.meshes.length);
-            const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
-            const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
-            const a = document.createElement("a");
-            a.download = "mesh.obj";
-            a.href = URL.createObjectURL(blob);
-            a.click();
-        });
+        this.addInteractions();
 
         this.renderer.resizeBackings();
 
@@ -77,6 +58,32 @@ export default class Engine {
         let mesh = this.renderer.meshes[0];
         mat4.rotateX(mesh.transform, mesh.transform, Math.PI / 2);
         mesh.rotType = 1;
-        console.log("Loaded obj file");
+    }
+
+    private addInteractions(): void {
+        const soundInput = document.querySelector("#soundFileInput");
+        soundInput.addEventListener("input", () => {
+            this.analyseAudio().then(() => {
+                console.log("Loaded audio file");
+            });
+        });
+
+        const objInput = document.querySelector("#objFileInput") as HTMLInputElement;
+        objInput?.addEventListener("input", () => {
+            this.loadObjFile(objInput).then(() => {
+                console.log("Loaded obj file");
+            });
+        });
+
+        const objExportButton = document.querySelector("#objExportButton");
+        objExportButton?.addEventListener("click", () => {
+            console.log(this.renderer.meshes.length);
+            const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
+            const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
+            const a = document.createElement("a");
+            a.download = "mesh.obj";
+            a.href = URL.createObjectURL(blob);
+            a.click();
+        });
     }
 }
