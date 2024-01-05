@@ -18,6 +18,7 @@ export default class Mesh{
     meshData: MeshData;
 
     transform: mat4;
+    rotType: number = 0;
 
     constructor(meshData: MeshData, device: GPUDevice){
         this.meshData = meshData;

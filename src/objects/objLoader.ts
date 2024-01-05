@@ -93,7 +93,7 @@ export default class ObjLoader {
             uv: new Float32Array(finalUvs),
             normals: new Float32Array(finalNormals),
             indices: new Uint16Array(finalIndices),
-            colors: new Float32Array((finalPositions.length / 3) * 4).fill(1.0),
+            colors: new Float32Array((finalPositions.length / 3) * 4).fill(0.75),
         }
     }
 }

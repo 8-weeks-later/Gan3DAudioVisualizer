@@ -185,8 +185,15 @@ export default class DefaultShaderMesh extends Mesh{
         const cameraInstance = Camera.getInstance();
         const cameraArray = new Float32Array(36);
 
-        mat4.rotate(this.transform, this.transform, 1 * 0.04, [0, 1, 0]);
-        mat4.rotateZ(this.transform, this.transform, 1 * 0.04);
+        if (this.rotType == 0){
+            mat4.rotateZ(this.transform, this.transform, 1 * 0.04);
+        }
+        else{
+            const upFromTransform = vec3.create();
+            vec3.set(upFromTransform, this.transform[4], this.transform[5], this.transform[6]);
+            vec3.normalize(upFromTransform, upFromTransform);
+            mat4.rotate(this.transform, this.transform, 1 * 0.04, upFromTransform);
+        }
 
         cameraArray.set(cameraInstance.getProjectionMatrix(), 0);
         cameraArray.set(cameraInstance.getViewMatrix(), 16);

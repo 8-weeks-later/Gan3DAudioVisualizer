@@ -12,6 +12,7 @@ export default class Renderer {
     depthTexture: GPUTexture;
     depthTextureView: GPUTextureView;
     meshes: Mesh[];
+    cubeMapMesh: Mesh;
     commandEncoder: GPUCommandEncoder;
     passEncoder: GPURenderPassEncoder;
     cubemapTexture: GPUTexture;
@@ -20,5 +21,6 @@ export default class Renderer {
     resizeBackings(): void;
     encodeCommands(): void;
     render: () => void;
-    setMesh(meshData: MeshData, cubeMapMesh: MeshData): Promise<void>;
+    setMesh(meshData: MeshData): void;
+    setCubeMapMesh(meshData: MeshData): Promise<void>;
 }
