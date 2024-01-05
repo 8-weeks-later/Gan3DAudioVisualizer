@@ -78,7 +78,7 @@ export default class Engine {
 
         const objExportButton = document.querySelector("#objExportButton");
         objExportButton?.addEventListener("click", () => {
-            const meshData = ObjExporter.exportMesh(this.renderer.meshes[this.renderer.meshes.length - 2]);
+            const meshData = ObjExporter.exportMesh(this.renderer.meshes[0]);
             const blob = new Blob([meshData], {type: "text/plain;charset=utf-8"});
             const a = document.createElement("a");
             a.download = "mesh.obj";
