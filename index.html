@@ -84,6 +84,10 @@
           <summary>Light 1</summary>
           <div style="margin-top: 10px;" class="vbox pack gap(20) p(10) b(#354649)">
             <div class="vbox pack gap(10) slidecontainer">
+              <label for="lightColorIntensity1">intensity</label>
+              <input type="range" min="1" max="100" value="50" class="slider" id="lightColorIntensity1">
+            </div>
+            <div class="vbox pack gap(10) slidecontainer">
               <label for="lightColorRange1R">color(R)</label>
               <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange1R">
             </div>
@@ -112,6 +116,10 @@
         <details>
           <summary>Light 2</summary>
           <div style="margin-top: 10px;" class="vbox pack gap(20) p(10) b(#354649)">
+            <div class="vbox pack gap(10) slidecontainer">
+              <label for="lightColorIntensity2">intensity</label>
+              <input type="range" min="1" max="100" value="50" class="slider" id="lightColorIntensity2">
+            </div>
             <div class="vbox pack gap(10) slidecontainer">
               <label for="lightColorRange2R">color(R)</label>
               <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange2R">
@@ -142,28 +150,32 @@
             <summary>Light 3</summary>
             <div style="margin-top: 10px;" class="vbox pack gap(20) p(10) b(#354649)">
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightColorRange3R">color(R)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3R">
+                  <label for="lightColorIntensity3">intensity</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightColorIntensity3">
                 </div>
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightColorRange3G">color(G)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3G">
+                  <label for="lightColorRange3R">color(R)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3R">
                 </div>
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightColorRange3B">color(B)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3B">
+                  <label for="lightColorRange3G">color(G)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3G">
                 </div>
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightPositionRange3X">position(X)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3X">
+                  <label for="lightColorRange3B">color(B)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightColorRange3B">
                 </div>
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightPositionRange3Y">position(Y)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3Y">
+                  <label for="lightPositionRange3X">position(X)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3X">
                 </div>
                 <div class="vbox pack gap(10) slidecontainer">
-                <label for="lightPositionRange3Z">position(Z)</label>
-                <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3Z">
+                  <label for="lightPositionRange3Y">position(Y)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3Y">
+                </div>
+                <div class="vbox pack gap(10) slidecontainer">
+                  <label for="lightPositionRange3Z">position(Z)</label>
+                  <input type="range" min="1" max="100" value="50" class="slider" id="lightPositionRange3Z">
                 </div>
             </div>
         </details>
