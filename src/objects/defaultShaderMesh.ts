@@ -5,6 +5,8 @@ import { mat4, vec3 } from 'gl-matrix';
 
 import vsCode from '../shaders/default.vert.wgsl';
 import fsCode from '../shaders/default.frag.wgsl';
+import InteractionParameter from '../engine/interactionParameter';
+import { numOfLight } from '../setting';
 
 export default class DefaultShaderMesh extends Mesh{
     constructor(meshData: MeshData, device: GPUDevice){
@@ -206,72 +208,26 @@ export default class DefaultShaderMesh extends Mesh{
         eyePositionArray.set(cameraInstance.getPosition(), 0);
         this.device.queue.writeBuffer(eyePositionBuffer, 0, eyePositionArray);
 
+        const ip = InteractionParameter.getInstance();
+
         const lightArray = new Float32Array(24);
-        {
-            const lightDirection = vec3.create();
-            vec3.set(lightDirection, 0.3, 0.3, -1.0);
-            lightArray.set(lightDirection, 0);
-            
-            lightArray.set([0], 3);
-    
-            const lightColor = vec3.create();
-            vec3.set(lightColor, 1, 1, 1);
-            lightArray.set(lightColor, 4);
-    
-            const lightIntensity = 2;
-            lightArray.set([lightIntensity], 7);
-            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
+        for (let i = 0; i < numOfLight; i++){
+            const light = ip.GetLight(i);
+            lightArray.set(light.direction, i * 8);
+            lightArray.set([0], i * 8 + 3);
+            lightArray.set(light.color, i * 8 + 4);
+            lightArray.set([light.intensity], i * 8 + 7);
         }
-        {
-            const lightDirection = vec3.create();
-            vec3.set(lightDirection, 0.3, -1, 0.2);
-            lightArray.set(lightDirection, 8);
-            
-            lightArray.set([0], 11);
-    
-            const lightColor = vec3.create();
-            vec3.set(lightColor, 1, 1, 1);
-            lightArray.set(lightColor, 12);
-    
-            const lightIntensity = 2;
-            lightArray.set([lightIntensity], 15);
-            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
-        }
-        {
-            const lightDirection = vec3.create();
-            vec3.set(lightDirection, 1.0, 0.3, -0.5);
-            lightArray.set(lightDirection, 16);
-            
-            lightArray.set([0], 19);
-    
-            const lightColor = vec3.create();
-            vec3.set(lightColor, 1, 1, 1);
-            lightArray.set(lightColor, 20);
-    
-            const lightIntensity = 2;
-            lightArray.set([lightIntensity], 23);
-            this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
-        }
+        this.device.queue.writeBuffer(lightBuffer, 0, lightArray);
 
         const materialArray = new Float32Array(12);
-        const ambient = vec3.create();
-        vec3.set(ambient, 0.1, 0.1, 0.1);
-        materialArray.set(ambient, 0);
-
-        lightArray.set([0], 3);
-
-        const diffuse = vec3.create();
-        vec3.set(diffuse, 0.5, 0.5, 0.5);
-        materialArray.set(diffuse, 4);
-        
-        lightArray.set([0], 7);
-
-        const specular = vec3.create();
-        vec3.set(specular, 1, 1, 1);
-        materialArray.set(specular, 8);
-        
-        const shininess = 32;
-        materialArray.set([shininess], 11);
+        const material = ip.GetMaterial();
+        materialArray.set(material.ambient, 0);
+        materialArray.set([0], 3);
+        materialArray.set(material.diffuse, 4);
+        materialArray.set([0], 7);
+        materialArray.set(material.specular, 8);
+        materialArray.set([material.shininess], 11);
         this.device.queue.writeBuffer(materialBuffer, 0, materialArray);
         
         passEncoder.setPipeline(this.pipeline);
