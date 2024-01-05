@@ -1,4 +1,6 @@
-export const canvasSize = 640;
+export const canvasSize = 600
+
+export const numOfLight = 3;
 
 export default class CameraSetting{
     static readonly fov = 45;

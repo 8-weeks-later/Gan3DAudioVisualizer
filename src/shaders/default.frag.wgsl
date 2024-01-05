@@ -20,7 +20,7 @@ struct Material{
 @group(0) @binding(4) var<uniform> material: Material;
 
 fn BlinnPhong(inLight: Light, inMaterial: Material, inNormal: vec3f, inViewDir: vec3f) -> vec3f {
-    var ambient = inLight.color * inMaterial.ambient;
+    var ambient = inMaterial.ambient;
     var lightDir = normalize(-inLight.direction);
     var viewDir = normalize(inViewDir);
     var halfDir = normalize(lightDir + viewDir);
@@ -28,11 +28,11 @@ fn BlinnPhong(inLight: Light, inMaterial: Material, inNormal: vec3f, inViewDir: 
     var diffuse = inLight.color * inMaterial.diffuse * diff;
     var spec = pow(max(dot(inNormal, halfDir), 0.0), inMaterial.shininess);
     var specular = inLight.color * inMaterial.specular * spec;
-    return ambient + diffuse + specular;
+    return ambient + (diffuse + specular) * inLight.intensity;
 }
 
 fn computeLighting(inLight: Light, inMaterial: Material, inNormal: vec3f, inViewDir: vec3f) -> vec3f {
-    return BlinnPhong(inLight, inMaterial, inNormal, inViewDir) * inLight.intensity;
+    return BlinnPhong(inLight, inMaterial, inNormal, inViewDir);
 }
 
 @fragment
