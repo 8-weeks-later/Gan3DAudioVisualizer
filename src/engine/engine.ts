@@ -1,4 +1,4 @@
-import { canvasSize } from "../setting";
+import { canvasSize, numOfLight } from '../setting';
 import GeometryGenerator from "../objects/geometryGenerator";
 import Renderer from "./renderer";
 import Camera from "./camera";
@@ -6,6 +6,7 @@ import AudioAnalyser from "../audioAnalyser/audioAnalyser";
 import InputManager from './inputManager';
 import ObjExporter from '../objects/objExporter';
 import { mat4 } from 'gl-matrix';
+import InteractionParameter from './interactionParameter';
 
 export default class Engine {
     canvas: HTMLCanvasElement;
@@ -85,5 +86,52 @@ export default class Engine {
             a.href = URL.createObjectURL(blob);
             a.click();
         });
+
+        const interactionParameter = InteractionParameter.getInstance();
+        for (let i = 0; i < numOfLight; i++){
+            const htmlIndex = i + 1;
+            const light = interactionParameter.GetLight(i);
+            const lightDirectionXInput = document.querySelector(`#lightPositionRange${htmlIndex}X`) as HTMLInputElement;
+            lightDirectionXInput.value = `${light.direction[0] * 20 + 50}`;
+            lightDirectionXInput.addEventListener("input", () => {
+                light.direction[0] = (parseFloat(lightDirectionXInput.value) - 50) / 20;
+            });
+
+            const lightDirectionYInput = document.querySelector(`#lightPositionRange${htmlIndex}Y`) as HTMLInputElement;
+            lightDirectionYInput.value = `${light.direction[1] * 20 + 50}`;
+            lightDirectionYInput.addEventListener("input", () => {
+                light.direction[1] = (parseFloat(lightDirectionYInput.value) - 50) / 20;
+            });
+
+            const lightDirectionZInput = document.querySelector(`#lightPositionRange${htmlIndex}Z`) as HTMLInputElement;
+            lightDirectionZInput.value = `${light.direction[2] * 20 + 50}`;
+            lightDirectionZInput.addEventListener("input", () => {
+                light.direction[2] = (parseFloat(lightDirectionZInput.value) - 50) / 20;
+            });
+
+            const lightColorRInput = document.querySelector(`#lightColorRange${htmlIndex}R`) as HTMLInputElement
+            lightColorRInput.value = `${light.color[0] * 100}`;
+            lightColorRInput.addEventListener("input", () => {
+                light.color[0] = parseFloat(lightColorRInput.value) / 100;
+            });
+
+            const lightColorGInput = document.querySelector(`#lightColorRange${htmlIndex}G`) as HTMLInputElement
+            lightColorGInput.value = `${light.color[1] * 100}`;
+            lightColorGInput.addEventListener("input", () => {
+                light.color[1] = parseFloat(lightColorGInput.value) / 100;
+            });
+
+            const lightColorBInput = document.querySelector(`#lightColorRange${htmlIndex}B`) as HTMLInputElement
+            lightColorBInput.value = `${light.color[2] * 100}`;
+            lightColorBInput.addEventListener("input", () => {
+                light.color[2] = parseFloat(lightColorBInput.value) / 100;
+            });
+
+            const lightIntensityInput = document.querySelector(`#lightColorIntensity${htmlIndex}`) as HTMLInputElement;
+            lightIntensityInput.value = `${light.intensity} * 50`;
+            lightIntensityInput.addEventListener("input", () => {
+                light.intensity = parseFloat(lightIntensityInput.value) / 50;
+            });
+        }
     }
 }
